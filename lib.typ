@@ -8,7 +8,7 @@
   radius: 4pt,
   fill: white,
   color: rgb(89, 85, 101),
-  opacity: 0.2,
+  opacity: 0.3,
   blur: 4.0,
   body,
 ) = layout(size => {
@@ -49,7 +49,7 @@
     radius: radius,
     opacity: opacity,
     blur: blur,
-    color: strfmt("rgb({}, {}, {})", ..black.rgb().components().map(el => el / 100% * 255)),
+    color: strfmt("rgb({}, {}, {})", ..color.rgb().components().map(el => el / 100% * 255)),
   )
 
   let shadow = strfmt(template, ..replacements)
