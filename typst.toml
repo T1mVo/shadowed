@@ -7,4 +7,4 @@ license = "MIT"
 description = "Box shadows for Typst"
 repository = "https://github.com/T1mVo/shadowed"
 categories = ["components"]
-compiler = "0.11"
+compiler = "0.11.0"
