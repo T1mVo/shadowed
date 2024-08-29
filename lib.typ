@@ -55,7 +55,7 @@
   let shadow = strfmt(template, ..replacements)
 
   place(dx: shadow_inset.right - outset, dy: shadow_inset.top - outset)[
-    #image.decode(shadow)
+    #image.decode(alt: "shadow", shadow)
   ]
 
   block(inset: shadow_inset)[
