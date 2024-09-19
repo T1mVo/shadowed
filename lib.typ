@@ -1,3 +1,5 @@
+#let __renderer = plugin("renderer.wasm")
+
 #let __render(
   svg-height,
   svg-width,
@@ -19,8 +21,6 @@
   assert(type(y-offset) == type(0pt), message: "y-offset must be of type: Length")
   assert(type(radius) == type(0pt), message: "radius must be of type: Length")
 
-  let renderer = plugin("renderer.wasm")
-
   let svg-height = bytes(str(svg-height.pt()))
   let svg-width = bytes(str(svg-width.pt()))
   let blur = bytes(str(blur.pt() / 2.5))
@@ -31,7 +31,7 @@
   let y-offset = bytes(str(y-offset.pt()))
   let radius = bytes(str(radius.pt()))
 
-  let buffer = renderer.render(svg-height, svg-width, blur, color, rect-height, rect-width, x-offset, y-offset, radius)
+  let buffer = __renderer.render(svg-height, svg-width, blur, color, rect-height, rect-width, x-offset, y-offset, radius)
 
   image.decode(buffer, format: "svg", alt: "shadow")
 }
