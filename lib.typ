@@ -45,7 +45,7 @@
   body,
 ) = layout(size => [
   #let dims = measure[
-    #block[
+    #block(breakable: false)[
       #block(radius: radius, inset: blur)[
         #block(inset: inset)[
           #body
@@ -57,7 +57,7 @@
   #let width = calc.min(size.width, dims.width)
 
   #let height = measure[
-    #block[
+    #block(breakable: false)[
       #block(radius: radius, inset: blur, width: width)[
         #block(inset: inset)[
           #body
@@ -81,7 +81,7 @@
       )
     ]
 
-    #block(inset: blur)[
+    #block(inset: blur, breakable: false)[
       #block(radius: radius, inset: inset, fill: fill)[
         #body
       ]
