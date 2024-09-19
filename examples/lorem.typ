@@ -3,6 +3,6 @@
 #set page(margin: 15pt, height: auto)
 #set par(justify: true)
 
-#shadowed[
-    #lorem(50)
+#shadowed(radius: 4pt, inset: 12pt)[
+  #lorem(50)
 ]

@@ -1,66 +1,90 @@
-#import "@preview/oxifmt:0.2.1": strfmt
+#let __render(
+  svg-height,
+  svg-width,
+  blur,
+  color,
+  rect-height,
+  rect-width,
+  x-offset,
+  y-offset,
+  radius,
+) = {
+  assert(type(svg-height) == type(0pt), message: "svg-height must be of type: Length")
+  assert(type(svg-width) == type(0pt), message: "svg-width must be of type: Length")
+  assert(type(blur) == type(0pt), message: "blur must be of type: Length")
+  assert(type(color) == type(rgb(0, 0, 0)), message: "color must be of type: Color")
+  assert(type(rect-height) == type(0pt), message: "rect-height must be of type: Length")
+  assert(type(rect-width) == type(0pt), message: "rect-width must be of type: Length")
+  assert(type(x-offset) == type(0pt), message: "x-offset must be of type: Length")
+  assert(type(y-offset) == type(0pt), message: "y-offset must be of type: Length")
+  assert(type(radius) == type(0pt), message: "radius must be of type: Length")
+
+  let renderer = plugin("renderer.wasm")
+
+  let svg-height = bytes(str(svg-height.pt()))
+  let svg-width = bytes(str(svg-width.pt()))
+  let blur = bytes(str(blur.pt() / 2.5))
+  let color = bytes(color.rgb().to-hex())
+  let rect-height = bytes(str(rect-height.pt()))
+  let rect-width = bytes(str(rect-width.pt()))
+  let x-offset = bytes(str(x-offset.pt()))
+  let y-offset = bytes(str(y-offset.pt()))
+  let radius = bytes(str(radius.pt()))
+
+  let buffer = renderer.render(svg-height, svg-width, blur, color, rect-height, rect-width, x-offset, y-offset, radius)
+
+  image.decode(buffer, format: "svg", alt: "shadow")
+}
 
 #let shadowed(
-  dx: 0pt,
-  dy: 0pt,
-  outset: 8pt,
-  inset: 12pt,
-  radius: 4pt,
+  blur: 8pt,
+  radius: 0pt,
+  color: rgb(89, 85, 101, 30%),
+  inset: 0pt,
   fill: white,
-  color: rgb(89, 85, 101),
-  opacity: 0.3,
-  blur: 4.0,
   body,
-) = layout(size => {
-  let template = read("shadow.svg")
-
-  let shadow_inset = (
-    right: calc.max(outset + dx, 0pt),
-    left: calc.max(outset + -dx, 0pt),
-    top: calc.max(outset + dy, 0pt),
-    bottom: calc.max(outset + -dy, 0pt),
-  )
-
-  let dims = measure[
-    #block(inset: shadow_inset)[
-      #block(inset: inset)[
-        #body
+) = layout(size => [
+  #let dims = measure[
+    #block[
+      #block(radius: radius, inset: blur)[
+        #block(inset: inset)[
+          #body
+        ]
       ]
     ]
   ]
 
-  let width = calc.min(size.width, dims.width)
+  #let width = calc.min(size.width, dims.width)
 
-  let height = measure[
-    #block(inset: shadow_inset, width: width)[
-      #block(inset: inset)[
-        #body
+  #let height = measure[
+    #block[
+      #block(radius: radius, inset: blur, width: width)[
+        #block(inset: inset)[
+          #body
+        ]
       ]
     ]
   ].height
 
-  let replacements = (
-    canvas-width: width,
-    canvas-height: height,
-    rect-width: width - (shadow_inset.left + shadow_inset.right),
-    rect-height: height - (shadow_inset.top + shadow_inset.bottom),
-    rect-x-offset: shadow_inset.left,
-    rect-y-offset: shadow_inset.bottom,
-    radius: radius,
-    opacity: opacity,
-    blur: blur,
-    color: strfmt("rgb({}, {}, {})", ..color.rgb().components().map(el => el / 100% * 255)),
-  )
+  #block()[
+    #place[
+      #__render(
+        height, // svg-height
+        width, // svg-width
+        blur, // blur
+        color, // color
+        height - blur * 2, // rect-height
+        width - blur * 2, // rect-width
+        blur, // x-offset
+        blur, // y-offset
+        radius, // radius
+      )
+    ]
 
-  let shadow = strfmt(template, ..replacements)
-
-  place(dx: shadow_inset.right - outset, dy: shadow_inset.top - outset)[
-    #image.decode(alt: "shadow", shadow)
-  ]
-
-  block(inset: shadow_inset)[
-    #block(inset: inset, radius: radius, fill: fill)[
-      #body
+    #block(inset: blur)[
+      #block(radius: radius, inset: inset, fill: fill)[
+        #body
+      ]
     ]
   ]
-})
+])

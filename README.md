@@ -9,7 +9,7 @@ Box shadows for [Typst](https://typst.app/).
 
 #set par(justify: true)
 
-#shadowed[
+#shadowed(radius: 4pt, inset: 12pt)[
     #lorem(50)
 ]
 ```
