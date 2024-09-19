@@ -1,4 +1,6 @@
-#let __renderer = plugin("renderer.wasm")
+#import "@preview/oxifmt:0.2.1": strfmt
+
+#let __template = read("renderer/templates/shadow.svg.jinja")
 
 #let __render(
   svg-height,
@@ -21,19 +23,21 @@
   assert(type(y-offset) == type(0pt), message: "y-offset must be of type: Length")
   assert(type(radius) == type(0pt), message: "radius must be of type: Length")
 
-  let svg-height = bytes(str(svg-height.pt()))
-  let svg-width = bytes(str(svg-width.pt()))
-  let blur = bytes(str(blur.pt() / 2.5))
-  let color = bytes(color.rgb().to-hex())
-  let rect-height = bytes(str(rect-height.pt()))
-  let rect-width = bytes(str(rect-width.pt()))
-  let x-offset = bytes(str(x-offset.pt()))
-  let y-offset = bytes(str(y-offset.pt()))
-  let radius = bytes(str(radius.pt()))
+  let replacements = (
+    svg-height: svg-height.pt(),
+    svg-width: svg-width.pt(),
+    blur: blur.pt() / 2.5,
+    color: color.rgb().to-hex(),
+    rect-height: rect-height.pt(),
+    rect-width: rect-width.pt(),
+    x-offset: x-offset.pt(),
+    y-offset: y-offset.pt(),
+    radius: radius.pt(),
+  )
 
-  let buffer = __renderer.render(svg-height, svg-width, blur, color, rect-height, rect-width, x-offset, y-offset, radius)
+  let svg = strfmt(__template, ..replacements)
 
-  image.decode(buffer, format: "svg", alt: "shadow")
+  image.decode(svg, format: "svg", alt: "shadow")
 }
 
 #let shadowed(
