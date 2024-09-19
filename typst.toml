@@ -8,4 +8,4 @@ description = "Box shadows for Typst"
 repository = "https://github.com/T1mVo/shadowed"
 categories = [ "components" ]
 compiler = "0.11.0"
-exclude = [ "renderer/**" ]
+exclude = [ "benchmarks/**", "examples/**", "renderer/**", ".gitignore" ]
