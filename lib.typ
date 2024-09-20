@@ -1,5 +1,7 @@
 #let __renderer = plugin("renderer.wasm")
 
+#let __color-type = color
+
 #let __render(
   svg-height,
   svg-width,
@@ -11,15 +13,15 @@
   y-offset,
   radius,
 ) = {
-  assert(type(svg-height) == type(0pt), message: "svg-height must be of type: Length")
-  assert(type(svg-width) == type(0pt), message: "svg-width must be of type: Length")
-  assert(type(blur) == type(0pt), message: "blur must be of type: Length")
-  assert(type(color) == type(rgb(0, 0, 0)), message: "color must be of type: Color")
-  assert(type(rect-height) == type(0pt), message: "rect-height must be of type: Length")
-  assert(type(rect-width) == type(0pt), message: "rect-width must be of type: Length")
-  assert(type(x-offset) == type(0pt), message: "x-offset must be of type: Length")
-  assert(type(y-offset) == type(0pt), message: "y-offset must be of type: Length")
-  assert(type(radius) == type(0pt), message: "radius must be of type: Length")
+  assert(type(svg-height) == length, message: "svg-height must be of type: Length")
+  assert(type(svg-width) == length, message: "svg-width must be of type: Length")
+  assert(type(blur) == length, message: "blur must be of type: Length")
+  assert(type(color) == __color-type, message: "color must be of type: Color")
+  assert(type(rect-height) == length, message: "rect-height must be of type: Length")
+  assert(type(rect-width) == length, message: "rect-width must be of type: Length")
+  assert(type(x-offset) == length, message: "x-offset must be of type: Length")
+  assert(type(y-offset) == length, message: "y-offset must be of type: Length")
+  assert(type(radius) == length, message: "radius must be of type: Length")
 
   let svg-height = bytes(str(svg-height.pt()))
   let svg-width = bytes(str(svg-width.pt()))
