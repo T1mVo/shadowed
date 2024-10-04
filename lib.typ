@@ -23,19 +23,19 @@
   assert(type(y-offset) == length, message: "y-offset must be of type: Length")
   assert(type(radius) == length, message: "radius must be of type: Length")
 
-  let svg-height = bytes(str(svg-height.pt()))
-  let svg-width = bytes(str(svg-width.pt()))
-  let blur = bytes(str(blur.pt() / 2.5))
+  let svg-height = svg-height.pt().to-bytes()
+  let svg-width = svg-width.pt().to-bytes()
+  let blur = (blur.pt() / 2.5).to-bytes()
   let color = bytes(color.rgb().to-hex())
-  let rect-height = bytes(str(rect-height.pt()))
-  let rect-width = bytes(str(rect-width.pt()))
-  let x-offset = bytes(str(x-offset.pt()))
-  let y-offset = bytes(str(y-offset.pt()))
-  let radius = bytes(str(radius.pt()))
+  let rect-height = rect-height.pt().to-bytes()
+  let rect-width = rect-width.pt().to-bytes()
+  let x-offset = x-offset.pt().to-bytes()
+  let y-offset = y-offset.pt().to-bytes()
+  let radius = radius.pt().to-bytes()
 
   let buffer = __renderer.render(svg-height, svg-width, blur, color, rect-height, rect-width, x-offset, y-offset, radius)
 
-  image.decode(buffer, format: "svg", alt: "shadow")
+  image.decode(buffer, format: "svg", width: 100%, alt: "shadow")
 }
 
 #let shadowed(
