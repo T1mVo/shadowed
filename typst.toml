@@ -9,3 +9,6 @@ repository = "https://github.com/T1mVo/shadowed"
 categories = [ "components" ]
 compiler = "0.11.0"
 exclude = [ "benchmarks/**", "examples/**", "renderer/**", ".gitignore" ]
+
+[tool.typst-test]
+vcs = "git"

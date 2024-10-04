@@ -1,2 +1,4 @@
 .DS_Store
 renderer/target
+**/diff
+**/out
