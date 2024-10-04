@@ -3,6 +3,23 @@ use std::str;
 use rinja::Template;
 use wasm_minimal_protocol::*;
 
+macro_rules! float {
+    ($bytes:expr, $arg:expr) => {{
+        let buffer: [u8; 8] = $bytes
+            .try_into()
+            .map_err(|_| concat!("Could not cast ", $arg, " to f64: Length must be 8 bytes"))?;
+
+        Ok::<f64, String>(f64::from_le_bytes(buffer))
+    }};
+}
+
+macro_rules! string {
+    ($bytes:expr, $arg:expr) => {{
+        str::from_utf8($bytes)
+            .map_err(|_| concat!("Could not cast ", $arg, " to str: Invalid UTF-8"))
+    }};
+}
+
 initiate_protocol!();
 
 #[wasm_func]
@@ -18,23 +35,15 @@ pub fn render(
     arg8: &[u8],
     arg9: &[u8],
 ) -> Result<Vec<u8>, String> {
-    let svg_height =
-        str::from_utf8(arg1).map_err(|_| "Could not parse svg_width to string: Invalid UTF-8")?;
-    let svg_width =
-        str::from_utf8(arg2).map_err(|_| "Could not parse svg_height to string: Invalid UTF-8")?;
-    let blur = str::from_utf8(arg3).map_err(|_| "Could not parse blur to string: Invalid UTF-8")?;
-    let color =
-        str::from_utf8(arg4).map_err(|_| "Could not parse color to string: Invalid UTF-8")?;
-    let rect_height =
-        str::from_utf8(arg5).map_err(|_| "Could not parse rect_height to string: Invalid UTF-8")?;
-    let rect_width =
-        str::from_utf8(arg6).map_err(|_| "Could not parse rect_width to string: Invalid UTF-8")?;
-    let x_offset =
-        str::from_utf8(arg7).map_err(|_| "Could not parse x_offset to string: Invalid UTF-8")?;
-    let y_offset =
-        str::from_utf8(arg8).map_err(|_| "Could not parse y_offest to string: Invalid UTF-8")?;
-    let radius =
-        str::from_utf8(arg9).map_err(|_| "Could not parse radius to string: Invalid UTF-8")?;
+    let svg_height = float!(arg1, "svg_height")?;
+    let svg_width = float!(arg2, "svg_width")?;
+    let blur = float!(arg3, "blur")?;
+    let color = string!(arg4, "color")?;
+    let rect_height = float!(arg5, "rect_height")?;
+    let rect_width = float!(arg6, "rect_width")?;
+    let x_offset = float!(arg7, "x_offset")?;
+    let y_offset = float!(arg8, "y_offset")?;
+    let radius = float!(arg9, "radius")?;
 
     let svg = SvgTemplate {
         svg_height,
@@ -59,13 +68,13 @@ pub fn render(
 #[derive(Template)]
 #[template(path = "shadow.svg.jinja")]
 struct SvgTemplate<'a> {
-    svg_height: &'a str,
-    svg_width: &'a str,
-    blur: &'a str,
+    svg_height: f64,
+    svg_width: f64,
+    blur: f64,
     color: &'a str,
-    rect_height: &'a str,
-    rect_width: &'a str,
-    x_offset: &'a str,
-    y_offset: &'a str,
-    radius: &'a str,
+    rect_height: f64,
+    rect_width: f64,
+    x_offset: f64,
+    y_offset: f64,
+    radius: f64,
 }
