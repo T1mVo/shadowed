@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  Tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install cargo
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: cargo
+          version: 1.0
+
+      - name: Install typst-test
+        uses: baptiste0928/cargo-install@v3.0.0
+        with:
+          crate: typst-test-cli
+          git: https://github.com/tingerrr/typst-test.git
+          commit: 48b2cb9555010cf99797f0e2d7542fbe8e493c09
+
+      - name: Run tests
+        run: typst-test run
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: artifacts
+          path: |
+            tests/**/diff/*.png
+            tests/**/out/*.png
+            tests/**/ref/*.png
+          retention-days: 14
