@@ -68,7 +68,7 @@
     ]
   ].height
 
-  #block()[
+  #block(breakable: false)[
     #place[
       #__render(
         height, // svg-height
@@ -83,7 +83,7 @@
       )
     ]
 
-    #block(inset: blur, breakable: false)[
+    #block(inset: blur)[
       #block(radius: radius, inset: inset, fill: fill)[
         #body
       ]
