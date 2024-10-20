@@ -1,6 +1,6 @@
 [package]
 name = "shadowed"
-version = "0.1.0"
+version = "0.1.1"
 entrypoint = "lib.typ"
 authors = [ "Tim Voßhenrich <https://github.com/T1mVo>" ]
 license = "MIT"
