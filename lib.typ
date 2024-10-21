@@ -11,15 +11,15 @@
   y-offset,
   radius,
 ) = {
-  assert(type(svg-height) == length, message: "svg-height must be of type: Length")
-  assert(type(svg-width) == length, message: "svg-width must be of type: Length")
-  assert(type(blur) == length, message: "blur must be of type: Length")
-  assert(type(color) == std.color, message: "color must be of type: Color")
-  assert(type(rect-height) == length, message: "rect-height must be of type: Length")
-  assert(type(rect-width) == length, message: "rect-width must be of type: Length")
-  assert(type(x-offset) == length, message: "x-offset must be of type: Length")
-  assert(type(y-offset) == length, message: "y-offset must be of type: Length")
-  assert(type(radius) == length, message: "radius must be of type: Length")
+  assert(type(svg-height) == length, message: "svg-height must be of type: length")
+  assert(type(svg-width) == length, message: "svg-width must be of type: length")
+  assert(type(blur) == length, message: "blur must be of type: length")
+  assert(type(color) == std.color, message: "color must be of type: color")
+  assert(type(rect-height) == length, message: "rect-height must be of type: length")
+  assert(type(rect-width) == length, message: "rect-width must be of type: length")
+  assert(type(x-offset) == length, message: "x-offset must be of type: length")
+  assert(type(y-offset) == length, message: "y-offset must be of type: length")
+  assert(type(radius) == length, message: "radius must be of type: length")
 
   let image-height = svg-height
   let image-width = svg-width
