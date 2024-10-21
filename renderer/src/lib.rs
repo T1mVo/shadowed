@@ -35,14 +35,14 @@ pub fn render(
     arg8: &[u8],
     arg9: &[u8],
 ) -> Result<Vec<u8>, String> {
-    let svg_height = float!(arg1, "svg_height")?;
-    let svg_width = float!(arg2, "svg_width")?;
+    let svg_height = float!(arg1, "svg-height")?;
+    let svg_width = float!(arg2, "svg-width")?;
     let blur = float!(arg3, "blur")?;
     let color = string!(arg4, "color")?;
-    let rect_height = float!(arg5, "rect_height")?;
-    let rect_width = float!(arg6, "rect_width")?;
-    let x_offset = float!(arg7, "x_offset")?;
-    let y_offset = float!(arg8, "y_offset")?;
+    let rect_height = float!(arg5, "rect-height")?;
+    let rect_width = float!(arg6, "rect-width")?;
+    let x_offset = float!(arg7, "x-offset")?;
+    let y_offset = float!(arg8, "y-offset")?;
     let radius = float!(arg9, "radius")?;
 
     let svg = SvgTemplate {
