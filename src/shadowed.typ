@@ -1,6 +1,6 @@
-#let __renderer = plugin("renderer.wasm")
+#let renderer = plugin("renderer.wasm")
 
-#let __render(
+#let render(
   svg-height,
   svg-width,
   blur,
@@ -34,7 +34,7 @@
   let y-offset = y-offset.pt().to-bytes()
   let radius = radius.pt().to-bytes()
 
-  let buffer = __renderer.render(
+  let buffer = renderer.render(
     svg-height,
     svg-width,
     blur,
@@ -90,7 +90,7 @@
 
   #block(breakable: false)[
     #place[
-      #__render(
+      #render(
         height, // svg-height
         width, // svg-width
         blur, // blur
