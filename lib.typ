@@ -1,7 +1,5 @@
 #let __renderer = plugin("renderer.wasm")
 
-#let __color-type = color
-
 #let __render(
   svg-height,
   svg-width,
@@ -16,7 +14,7 @@
   assert(type(svg-height) == length, message: "svg-height must be of type: Length")
   assert(type(svg-width) == length, message: "svg-width must be of type: Length")
   assert(type(blur) == length, message: "blur must be of type: Length")
-  assert(type(color) == __color-type, message: "color must be of type: Color")
+  assert(type(color) == std.color, message: "color must be of type: Color")
   assert(type(rect-height) == length, message: "rect-height must be of type: Length")
   assert(type(rect-width) == length, message: "rect-width must be of type: Length")
   assert(type(x-offset) == length, message: "x-offset must be of type: Length")
