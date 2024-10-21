@@ -1,4 +1,4 @@
-#import "../lib.typ": shadowed
+#import "../src/lib.typ": shadowed
 
 #set par(justify: true)
  
