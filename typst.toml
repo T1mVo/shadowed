@@ -8,7 +8,7 @@ description = "Box shadows for Typst"
 repository = "https://github.com/T1mVo/shadowed"
 categories = [ "components" ]
 compiler = "0.12.0"
-exclude = [ "benchmarks/**", "examples/**", "renderer/**", ".gitignore" ]
+exclude = [ "benchmarks", "examples", "src/renderer", "tests", ".gitignore" ]
 
 [tool.typst-test]
 vcs = "git"
