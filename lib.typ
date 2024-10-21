@@ -34,11 +34,30 @@
   let y-offset = y-offset.pt().to-bytes()
   let radius = radius.pt().to-bytes()
 
-  let buffer = __renderer.render(svg-height, svg-width, blur, color, rect-height, rect-width, x-offset, y-offset, radius)
+  let buffer = __renderer.render(
+    svg-height,
+    svg-width,
+    blur,
+    color,
+    rect-height,
+    rect-width,
+    x-offset,
+    y-offset,
+    radius,
+  )
 
   image.decode(buffer, format: "svg", height: image-height, width: image-width, alt: "shadow")
 }
 
+/// Apply box shadows to inner content.
+///
+/// - blur (length): Blur radius of the shadow. Also adds a padding of the same size.
+/// - radius (length): Corner radius of block and shadow.
+/// - color (color): Color of the shadow.
+/// - inset (length): Inset of the block.
+/// - fill (color): Color of the block.
+/// - body (content): Inner content.
+/// -> content
 #let shadowed(
   blur: 8pt,
   radius: 0pt,
