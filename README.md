@@ -5,7 +5,7 @@ Box shadows for [Typst](https://typst.app/).
 ## Usage
 
 ```typ
-#import "@preview/shadowed:0.1.1": shadowed
+#import "@preview/shadowed:0.1.2": shadowed
 
 #set par(justify: true)
 
