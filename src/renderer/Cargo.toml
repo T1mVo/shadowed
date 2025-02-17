@@ -11,5 +11,5 @@ lto = "fat"
 strip = true
 
 [dependencies]
-rinja = "0.3.4"
+rinja = "0.3.5"
 wasm-minimal-protocol = { git = "https://github.com/astrale-sharp/wasm-minimal-protocol.git" }
