@@ -46,7 +46,7 @@
     radius,
   )
 
-  image.decode(buffer, format: "svg", height: image-height, width: image-width, alt: "shadow")
+  image(buffer, format: "svg", height: image-height, width: image-width, alt: "shadow")
 }
 
 /// Apply box shadows to inner content.
