@@ -6,7 +6,7 @@
 
 # Run tests
 @test:
-    typst-test run
+    tt run
 
 # Clean out and diff directories
 @clean:
