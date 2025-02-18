@@ -4,7 +4,7 @@
 
 #set par(justify: true)
 
-#let content = shadowed(radius: 4pt, inset: 12pt)[
+#let content = shadowed(radius: 4pt, inset: 12pt, shadow: 10pt)[
   #lorem(40)
 ]
 

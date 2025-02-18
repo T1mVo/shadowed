@@ -37,7 +37,7 @@ pub fn render(
 ) -> Result<Vec<u8>, String> {
     let svg_height = float!(arg1, "svg-height")?;
     let svg_width = float!(arg2, "svg-width")?;
-    let blur = float!(arg3, "blur")?;
+    let deviation = float!(arg3, "deviation")?;
     let color = string!(arg4, "color")?;
     let rect_height = float!(arg5, "rect-height")?;
     let rect_width = float!(arg6, "rect-width")?;
@@ -48,7 +48,7 @@ pub fn render(
     let svg = SvgTemplate {
         svg_height,
         svg_width,
-        blur,
+        deviation,
         color,
         rect_height,
         rect_width,
@@ -70,7 +70,7 @@ pub fn render(
 struct SvgTemplate<'a> {
     svg_height: f64,
     svg_width: f64,
-    blur: f64,
+    deviation: f64,
     color: &'a str,
     rect_height: f64,
     rect_width: f64,
