@@ -57,6 +57,8 @@
 /// - clip (bool): Whether to clip the content inside the block.
 /// - shadow (length): Blur radius of the shadow. Also adds a padding of the same size.
 /// - color (color): Color of the shadow.
+/// - dx (relative): The horizontal displacement of the shadow. Does not alter the block's padding.
+/// - dy (relative): The vertical displacement of the shadow. Does not alter the block's padding.
 /// - body (content): The contents of the block.
 /// -> content
 #let shadowed(
@@ -66,6 +68,9 @@
   clip: false,
   shadow: 8pt,
   color: rgb(89, 85, 101, 30%),
+  dx: 0% + 0pt,
+  dy: 0% + 0pt,
+  padding: auto,
   body,
 ) = layout(size => [
   #let (width, height) = measure(width: size.width, height: size.height)[
@@ -77,7 +82,7 @@
   ]
 
   #block(breakable: false)[
-    #place[
+    #place(dx: dx, dy: dy)[
       #render(
         height, // svg-height
         width, // svg-width

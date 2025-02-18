@@ -39,6 +39,8 @@ Box shadows for [Typst](https://typst.app/).
     - `clip` : [`bool`] Whether to clip the content inside the block.
     - `shadow` : [`length`] Blur radius of the shadow. Also adds a padding of the same size.
     - `color` : [`color`] Color of the shadow.
+    - `dx` : [`relative`] The horizontal displacement of the shadow. Does not alter the block's padding.
+    - `dy` : [`relative`] The vertical displacement of the shadow. Does not alter the block's padding.
     - `body` : [`content`] The contents of the block.
 
 - **Output**
