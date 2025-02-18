@@ -20,7 +20,7 @@ jobs:
           version: 1.0
 
       - name: Install tytanic
-        uses: baptiste0928/cargo-install@v3.0.0
+        uses: baptiste0928/cargo-install@v3.3.0
         with:
           crate: tytanic
           version: 0.1.3
