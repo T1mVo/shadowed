@@ -18,13 +18,31 @@ Box shadows for [Typst](https://typst.app/).
 
 ## Reference
 
-The `shadowed` function takes the following arguments:
+### `shadowed`
 
-- **blur: Length** - The blur radius of the shadow. Also adds a padding of the same size.
-- **radius: Length** - The corner radius of the inner block and shadow.
-- **color: Color** - The color of the shadow.
-- **inset: Length** - The inset of the inner block.
-- **fill: Color** - The color of the inner block.
+```typst
+#let shadowed(
+  fill: white,
+  radius: 0pt,
+  inset: 0pt,
+  clip: false,
+  shadow: 8pt,
+  color: rgb(89, 85, 101, 30%),
+  body,
+) = { ... }
+```
+
+- **Input Arguments**
+    - `fill` : [`color`] The block's background color.
+    - `radius` : [`length`] How much to round the block's corners.
+    - `inset` : [`length] How much to pad the block's content.
+    - `clip` : [`bool`] Whether to clip the content inside the block.
+    - `shadow` : [`length`] Blur radius of the shadow. Also adds a padding of the same size.
+    - `color` : [`color`] Color of the shadow.
+    - `body` : [`content`] The contents of the block.
+
+- **Output**
+    - [`content`]
 
 ## Credits
 

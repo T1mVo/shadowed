@@ -4,7 +4,7 @@
   xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink">
   <filter id="dropShadow" filterUnits="userSpaceOnUse" >
-    <feGaussianBlur stdDeviation="{{ blur }}" result="blur" />
+    <feGaussianBlur stdDeviation="{{ deviation }}" result="blur" />
     <feFlood in="blur" flood-color="{{ color }}" />
     <feComposite in2="blur" operator="in" result="shadow" />
   </filter>

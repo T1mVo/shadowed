@@ -3,7 +3,7 @@
 #let render(
   svg-height,
   svg-width,
-  blur,
+  deviation,
   color,
   rect-height,
   rect-width,
@@ -13,7 +13,7 @@
 ) = {
   assert(type(svg-height) == length, message: "svg-height must be of type: length")
   assert(type(svg-width) == length, message: "svg-width must be of type: length")
-  assert(type(blur) == length, message: "blur must be of type: length")
+  assert(type(deviation) == length, message: "deviation must be of type: length")
   assert(type(color) == std.color, message: "color must be of type: color")
   assert(type(rect-height) == length, message: "rect-height must be of type: length")
   assert(type(rect-width) == length, message: "rect-width must be of type: length")
@@ -26,7 +26,7 @@
 
   let svg-height = svg-height.pt().to-bytes()
   let svg-width = svg-width.pt().to-bytes()
-  let blur = (blur.pt() / 2.5).to-bytes()
+  let deviation = deviation.pt().to-bytes()
   let color = bytes(color.rgb().to-hex())
   let rect-height = rect-height.pt().to-bytes()
   let rect-width = rect-width.pt().to-bytes()
@@ -37,7 +37,7 @@
   let buffer = renderer.render(
     svg-height,
     svg-width,
-    blur,
+    deviation,
     color,
     rect-height,
     rect-width,
@@ -51,60 +51,48 @@
 
 /// Apply box shadows to inner content.
 ///
-/// - blur (length): Blur radius of the shadow. Also adds a padding of the same size.
-/// - radius (length): Corner radius of block and shadow.
+/// - fill (color): The block's background color.
+/// - radius (length): How much to round the block's corners.
+/// - inset (length): How much to pad the block's content.
+/// - clip (bool): Whether to clip the content inside the block.
+/// - shadow (length): Blur radius of the shadow. Also adds a padding of the same size.
 /// - color (color): Color of the shadow.
-/// - inset (length): Inset of the block.
-/// - fill (color): Color of the block.
-/// - body (content): Inner content.
+/// - body (content): The contents of the block.
 /// -> content
 #let shadowed(
-  blur: 8pt,
-  radius: 0pt,
-  color: rgb(89, 85, 101, 30%),
-  inset: 0pt,
   fill: white,
+  radius: 0pt,
+  inset: 0pt,
+  clip: false,
+  shadow: 8pt,
+  color: rgb(89, 85, 101, 30%),
   body,
 ) = layout(size => [
-  #let dims = measure[
-    #block(breakable: false)[
-      #block(radius: radius, inset: blur)[
-        #block(inset: inset)[
-          #body
-        ]
+  #let (width, height) = measure(width: size.width, height: size.height)[
+    #block(inset: shadow, breakable: false)[
+      #block(inset: inset)[
+        #body
       ]
     ]
   ]
-
-  #let width = calc.min(size.width, dims.width)
-
-  #let height = measure[
-    #block(breakable: false)[
-      #block(radius: radius, inset: blur, width: width)[
-        #block(inset: inset)[
-          #body
-        ]
-      ]
-    ]
-  ].height
 
   #block(breakable: false)[
     #place[
       #render(
         height, // svg-height
         width, // svg-width
-        blur, // blur
+        shadow / 2.5, // deviation
         color, // color
-        height - blur * 2, // rect-height
-        width - blur * 2, // rect-width
-        blur, // x-offset
-        blur, // y-offset
+        height - shadow * 2, // rect-height
+        width - shadow * 2, // rect-width
+        shadow, // x-offset
+        shadow, // y-offset
         radius, // radius
       )
     ]
 
-    #block(inset: blur)[
-      #block(radius: radius, inset: inset, fill: fill)[
+    #block(inset: shadow, breakable: false)[
+      #block(fill: fill, radius: radius, inset: inset, clip: clip)[
         #body
       ]
     ]
