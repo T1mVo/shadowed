@@ -46,7 +46,11 @@
     radius,
   )
 
-  image(buffer, format: "svg", height: image-height, width: image-width, alt: "shadow")
+  if sys.version == version(0, 12, 0) {
+    image.decode(buffer, format: "svg", height: image-height, width: image-width, alt: "shadow")
+  } else {
+    image(buffer, format: "svg", height: image-height, width: image-width, alt: "shadow")
+  }
 }
 
 /// Apply box shadows to inner content.
