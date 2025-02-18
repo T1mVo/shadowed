@@ -6,7 +6,7 @@ on:
     branches: [ main ]
 
 jobs:
-  0_12_0:
+  typst_0_12_0:
     name: Typst 0.12.0
     runs-on: ubuntu-latest
     steps:
@@ -39,7 +39,7 @@ jobs:
             tests/**/ref/*.png
           retention-days: 14
 
-  0_13_0:
+  typst_0_13_0:
     name: Typst 0.13.0
     runs-on: ubuntu-latest
     steps:
