@@ -1,0 +1,25 @@
+<svg
+  height="{svg-height}"
+  width="{svg-width}"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <filter id="dropShadow" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="{blur-deviation}" result="blur" />
+    <feMorphology operator="{spread-operator}" radius="{spread-radius}" in="blur" result="spread" />
+    <feFlood flood-color="{flood-color}" />
+    <feComposite in2="spread" operator="in" result="shadow" />
+  </filter>
+
+  <path d="
+    M {rect-dx-p-radius-tl}, {rect-dy}
+    H {rect-dx-p-rect-width-m-radius-tr}
+    A {radius-tr} {radius-tr} 0 0 1 {rect-dx-p-rect-width}, {rect-dy-p-radius-tr}
+    V {rect-dy-p-rect-height-m-radius-br}
+    A {radius-br} {radius-br} 0 0 1 {rect-dx-p-rect-width-m-radius-br}, {rect-dy-p-rect-height}
+    H {rect-dx-p-radius-bl}
+    A {radius-bl} {radius-bl} 0 0 1 {rect-dx}, {rect-dy-p-rect-height-m-radius-bl}
+    V {rect-dy-p-radius-tl}
+    A {radius-tl} {radius-tl} 0 0 1 {rect-dx-p-radius-tl}, {rect-dy}
+    Z
+  " filter="url(#dropShadow)" />
+</svg>

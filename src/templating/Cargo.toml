@@ -1,0 +1,19 @@
+[package]
+name = "templating"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = "fat"
+strip = true
+
+[dependencies]
+askama = "0.14.0"
+base64 = "0.22.1"
+ciborium = "0.2.2"
+serde = { version = "1.0.228", features = ["derive"] }
+typed = { path = "../typed" }
+wasm-minimal-protocol = "0.1.0"

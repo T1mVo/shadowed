@@ -1,0 +1,14 @@
+<svg
+  height="{svg-height}"
+  width="{svg-width}"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <filter id="dropShadow" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="{blur-deviation}" result="blur" />
+    <feMorphology operator="{spread-operator}" radius="{spread-radius}" in="blur" result="spread" />
+    <feFlood flood-color="{flood-color}" />
+    <feComposite in2="spread" operator="in" result="shadow" />
+  </filter>
+
+  <rect height="{rect-height}" width="{rect-width}" x="{rect-dx}" y="{rect-dy}" rx="{rect-radius}" ry="{rect-radius}" filter="url(#dropShadow)" />
+</svg>

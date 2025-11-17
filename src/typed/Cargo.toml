@@ -1,0 +1,17 @@
+[package]
+name = "typed"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+authors = ["Tim Voßhenrich"]
+description = ""
+readme = "README.md"
+repository = "https://github.com/T1mVo/typed"
+license = "MIT OR APACHE-2.0"
+keywords = ["typst", "typing", "wasm"]
+categories = ["data-structures", "encoding", "wasm"]
+
+
+[dependencies]
+ciborium = "0.2.2"
+serde = { version = "1.0.228", features = ["derive"] }

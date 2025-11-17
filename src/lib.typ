@@ -1,1 +1,1 @@
-#import "shadowed.typ": shadowed
+#import "shadowed.typ": shadowed, shadow

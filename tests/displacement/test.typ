@@ -1,21 +1,24 @@
-#import "../../src/lib.typ": shadowed
+#import "../../src/lib.typ": shadow
 
 #set page(margin: 10pt, width: 200pt, height: auto)
+
+#let item(dx, dy, text) = [
+  #let blur = 4pt
+  #let spread = 1pt
+  #let radius = 4pt
+  #pad(blur + spread)[
+    #shadow(dx: dx, dy: dy, blur: blur, spread: spread, color: rgb(89, 85, 101, 25%), radius: radius)[
+      #block(width: 100%, fill: white, inset: 10pt, radius: radius)[
+        #text
+      ]
+    ]
+  ]
+]
 
 #grid(
   columns: 2,
   rows: 2,
   align: center,
-  shadowed(radius: 4pt, inset: 10pt, shadow: 6pt, dx: -1.5pt, dy: -1.5pt)[
-    #block(width: 100%)[Top left]
-  ],
-    shadowed(radius: 4pt, inset: 10pt, shadow: 6pt, dx: 1.5pt, dy: -1.5pt)[
-    #block(width: 100%)[Top right]
-  ],
-    shadowed(radius: 4pt, inset: 10pt, shadow: 6pt, dx: -1.5pt, dy: 1.5pt)[
-    #block(width: 100%)[Bottom left]
-  ],
-    shadowed(radius: 4pt, inset: 10pt, shadow: 6pt, dx: 1.5pt, dy: 1.5pt)[
-    #block(width: 100%)[Bottom right]
-  ],
+  item(-1pt, -1pt, "Top left"), item(1pt, -1pt, "Top right"),
+  item(-1pt, 1pt, "Bottom left"), item(1pt, 1pt, "Bottom right"),
 )
