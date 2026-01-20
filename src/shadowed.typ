@@ -63,6 +63,7 @@
 /// - color (color): Color of the shadow.
 /// - dx (relative): The horizontal displacement of the shadow. Does not alter the block's padding.
 /// - dy (relative): The vertical displacement of the shadow. Does not alter the block's padding.
+/// - padding (length | auto): Extra padding around the block; `auto` matches the shadow size.
 /// - body (content): The contents of the block.
 /// -> content
 #let shadowed(
@@ -100,7 +101,7 @@
       )
     ]
 
-    #block(inset: shadow, breakable: false)[
+    #block(inset: if padding == auto { shadow } else { padding }, breakable: false)[
       #block(fill: fill, radius: radius, inset: inset, clip: clip)[
         #body
       ]
