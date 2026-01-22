@@ -1,0 +1,9 @@
+<linearGradient id="gradient"
+  gradientUnits="userSpaceOnUse"
+  x1="[x1]"
+  y1="[y1]"
+  x2="[x2]"
+  y2="[y2]"
+  gradientTransform="matrix([gradient-width] 0 0 [gradient-height] 0 0)">
+  [stops]
+</linearGradient>

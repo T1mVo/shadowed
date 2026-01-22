@@ -5,12 +5,14 @@ Box shadows for [Typst](https://typst.app/).
 ## Usage
 
 ```typ
-#import "@preview/shadowed:0.2.0": shadowed
+#import "@preview/shadowed:0.3.0": shadow
 
 #set par(justify: true)
 
-#shadowed(radius: 4pt, inset: 12pt)[
+#shadow(blur: 8pt, color: rgb(89, 85, 101, 25%), radius: 4pt)[
+  #block(fill: white, radius: 4pt, inset: 12pt)[
     #lorem(50)
+  ]
 ]
 ```
 

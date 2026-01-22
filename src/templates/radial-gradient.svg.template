@@ -1,0 +1,12 @@
+<radialGradient 
+  id="gradient"
+  gradientUnits="userSpaceOnUse"
+  cx="[center-x]"
+  cy="[center-y]"
+  fx="[focal-center-x]"
+  fy="[focal-center-y]"
+  r="[radius]"
+  fr="[focal-radius]"
+  gradientTransform="matrix([gradient-width] 0 0 [gradient-height] 0 0)">
+  [stops]
+</radialGradient>
