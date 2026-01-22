@@ -19,7 +19,7 @@ typst_parts = []
 for part in parts:
     if part.startswith("[") and part.endswith("]"):
         expr = part[1:-1].strip()
-        typst_parts.append(f"str({expr})")
+        typst_parts.append(f"to-str({expr})")
     else:
         escaped = part.replace("\\", "\\\\").replace('"', '\\"')
         if escaped:

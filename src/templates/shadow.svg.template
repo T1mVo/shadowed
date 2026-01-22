@@ -1,7 +1,7 @@
 <svg
   viewBox="0 0 [svg-width] [svg-height]"
-  height="[svg-height]"
-  width="[svg-width]"
+  height="[svg-height]pt"
+  width="[svg-width]pt"
   xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>

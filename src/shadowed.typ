@@ -1,5 +1,26 @@
 #let blur-to-deviation-factor = 1 / 2.6
 
+/// Converts a value to a string.
+///
+/// Alternative str constructor that renders negative numbers
+/// with a ASCII minus sign.
+/// 
+/// - value (str, int, float): 
+/// -> str
+#let to-str(value) = {
+  if type(value) == str {
+    value
+  } else if type(value) == int or type(value) == float {
+    if value < 0 {
+      "-" + str(-value)
+    } else {
+      str(value)
+    }
+  } else {
+    panic("to-str: unsupported type " + str(type(value)))
+  }
+}
+
 /// Normalize a radius.
 ///
 /// Returns a dictionary that contains the radius of each corner at
@@ -101,7 +122,7 @@
 /// - 4: `270deg..=360deg` (bottom-right)
 ///
 /// - angle (angle): The angle.
-/// -> integer
+/// -> int
 #let angle-quadrant(angle) = {
   let normalized-angle = calc.rem-euclid(angle.deg(), 360) * 1deg
 
@@ -119,7 +140,7 @@
 /// Corrects the angle for gradient vector calculation based on the aspect ratio.
 ///
 /// - angle (angle): The angle.
-/// - ratio (integer, float): The ratio.
+/// - ratio (int, float): The ratio.
 /// -> angle
 #let correct-angle(angle, ratio) = {
   let rad = calc.atan(calc.tan(calc.rem-euclid(angle.rad(), calc.tau)) / ratio).rad()
@@ -140,8 +161,8 @@
 /// Returns the vector coordinates in form of (x1, y1, x2, y2).
 ///
 /// - angle (angle): The angle.
-/// - width (integer, float, length): The width.
-/// - height (integer, float, length): The height.
+/// - width (int, float, length): The width.
+/// - height (int, float, length): The height.
 /// -> array
 #let calculate-gradient-vector(angle, width, height) = {
   let ratio = width / height
@@ -165,46 +186,41 @@
 /// Renders a gradient stop.
 ///
 /// - stop (list): The stop in form of (color, ratio).
-/// -> string
+/// -> str
 #let stop-template(stop) = {
   let stop-color = stop.at(0).to-hex()
   let offset = stop.at(1) / 1%
 
-  "<stop offset=\"" + str(offset) + "%\" stop-color=\"" + str(stop-color) + "\" />"
+  "<stop offset=\"" + to-str(offset) + "%\" stop-color=\"" + to-str(stop-color) + "\" />"
 }
 
 /// Renders a linear gradient.
 ///
 /// - gradient (gradient): The gradient of kind gradient.linear.
-/// - gradient-width (integer, float): The width of the gradient.
-/// - gradient-height (integer, float): The height of the gradient.
-/// -> string
+/// - gradient-width (int, float): The width of the gradient.
+/// - gradient-height (int, float): The height of the gradient.
+/// -> str
 #let linear-gradient-template(gradient, gradient-width, gradient-height) = {
   let interpolated-stops = interpolate-stops(gradient)
   let stops = interpolated-stops.map(stop => stop-template(stop)).join()
 
   let (x1, y1, x2, y2) = calculate-gradient-vector(gradient.angle(), gradient-width, gradient-height)
 
-  // Replace Unicode minus sign with ASCII hyphen-minus to avoid SVG parsing issues
-  // x1 and y1 are always positive
-  let x2 = str(x2).replace("\u{2212}", "\u{002D}")
-  let y2 = str(y2).replace("\u{2212}", "\u{002D}")
-
   (
     "<linearGradient id=\"gradient\" gradientUnits=\"userSpaceOnUse\" x1=\""
-      + str(x1)
+      + to-str(x1)
       + "\" y1=\""
-      + str(y1)
+      + to-str(y1)
       + "\" x2=\""
-      + str(x2)
+      + to-str(x2)
       + "\" y2=\""
-      + str(y2)
+      + to-str(y2)
       + "\" gradientTransform=\"matrix("
-      + str(gradient-width)
+      + to-str(gradient-width)
       + " 0 0 "
-      + str(gradient-height)
+      + to-str(gradient-height)
       + " 0 0)\"> "
-      + str(stops)
+      + to-str(stops)
       + " </linearGradient>"
   )
 }
@@ -212,7 +228,7 @@
 /// Renders a radial gradient.
 ///
 /// - gradient (gradient): The gradient of kind gradient.radial.
-/// -> string
+/// -> str
 #let radial-gradient-template(gradient, gradient-width, gradient-height) = {
   let center-x = gradient.center().at(0) / 100%
   let center-y = gradient.center().at(1) / 100%
@@ -224,23 +240,23 @@
 
   (
     "<radialGradient id=\"gradient\" gradientUnits=\"userSpaceOnUse\" cx=\""
-      + str(center-x)
+      + to-str(center-x)
       + "\" cy=\""
-      + str(center-y)
+      + to-str(center-y)
       + "\" fx=\""
-      + str(focal-center-x)
+      + to-str(focal-center-x)
       + "\" fy=\""
-      + str(focal-center-y)
+      + to-str(focal-center-y)
       + "\" r=\""
-      + str(radius)
+      + to-str(radius)
       + "\" fr=\""
-      + str(focal-radius)
+      + to-str(focal-radius)
       + "\" gradientTransform=\"matrix("
-      + str(gradient-width)
+      + to-str(gradient-width)
       + " 0 0 "
-      + str(gradient-height)
+      + to-str(gradient-height)
       + " 0 0)\"> "
-      + str(stops)
+      + to-str(stops)
       + " </radialGradient>"
   )
 }
@@ -248,9 +264,9 @@
 /// Renders a gradient based on its kind.
 ///
 /// - gradient (gradient): The gradient of kind gradient.linear or gradient.radial.
-/// - gradient-width (integer, float): The gradient width.
-/// - gradient-height (integer, float): The gradient height.
-/// -> string
+/// - gradient-width (int, float): The gradient width.
+/// - gradient-height (int, float): The gradient height.
+/// -> str
 #let gradient-template(gradient, gradient-width, gradient-height) = {
   if gradient.kind() == std.gradient.linear {
     linear-gradient-template(gradient, gradient-width, gradient-height)
@@ -263,20 +279,20 @@
 
 /// Renders a SVG box shadow.
 ///
-/// - svg-width (integer, float): The SVG width.
-/// - svg-height (integer, float): The SVG height.
-/// - blur-deviation (integer, float): The blur deviation.
-/// - spread-radius (integer, float): The spread radius.
+/// - svg-width (int, float): The SVG width.
+/// - svg-height (int, float): The SVG height.
+/// - blur-deviation (int, float): The blur deviation.
+/// - spread-radius (int, float): The spread radius.
 /// - fill (color, gradient): The fill color or gradient.
-/// - rect-dx (integer, float): The gradient x position.
-/// - rect-dy (integer, float): The gradient y position.
-/// - rect-width (integer, float): The gradient width.
-/// - rect-height (integer, float): The gradient height.
-/// - radius-tl (integer, float): The top-left radius.
-/// - radius-tr (integer, float): The top-right radius.
-/// - radius-bl (integer, float): The bottom-left radius.
-/// - radius-br (integer, float): The bottom-right radius.
-/// -> string
+/// - rect-dx (int, float): The gradient x position.
+/// - rect-dy (int, float): The gradient y position.
+/// - rect-width (int, float): The gradient width.
+/// - rect-height (int, float): The gradient height.
+/// - radius-tl (int, float): The top-left radius.
+/// - radius-tr (int, float): The top-right radius.
+/// - radius-bl (int, float): The bottom-left radius.
+/// - radius-br (int, float): The bottom-right radius.
+/// -> str
 #let shadow-template(
   svg-width: none,
   svg-height: none,
@@ -298,67 +314,67 @@
 
   (
     "<svg viewBox=\"0 0 "
-      + str(svg-width)
+      + to-str(svg-width)
       + " "
-      + str(svg-height)
+      + to-str(svg-height)
       + "\" height=\""
-      + str(svg-height)
-      + "\" width=\""
-      + str(svg-width)
-      + "\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <defs> "
-      + str(gradient)
+      + to-str(svg-height)
+      + "pt\" width=\""
+      + to-str(svg-width)
+      + "pt\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <defs> "
+      + to-str(gradient)
       + " <filter id=\"shadow\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"-10%\" y=\"-10%\" width=\"120%\" height=\"120%\"> <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\""
-      + str(blur-deviation)
+      + to-str(blur-deviation)
       + "\" result=\"blur\" /> <feMorphology operator=\""
-      + str(spread-operator)
+      + to-str(spread-operator)
       + "\" radius=\""
-      + str(spread-radius)
+      + to-str(spread-radius)
       + "\" in=\"blur\" result=\"spread\" /> </filter> </defs> <path d=\" M "
-      + str(rect-dx + radius-tl)
+      + to-str(rect-dx + radius-tl)
       + ", "
-      + str(rect-dy)
+      + to-str(rect-dy)
       + " H "
-      + str(rect-dx + rect-width - radius-tr)
+      + to-str(rect-dx + rect-width - radius-tr)
       + " A "
-      + str(radius-tr)
+      + to-str(radius-tr)
       + " "
-      + str(radius-tr)
+      + to-str(radius-tr)
       + " 0 0 1 "
-      + str(rect-dx + rect-width)
+      + to-str(rect-dx + rect-width)
       + ", "
-      + str(rect-dy + radius-tr)
+      + to-str(rect-dy + radius-tr)
       + " V "
-      + str(rect-dy + rect-height - radius-br)
+      + to-str(rect-dy + rect-height - radius-br)
       + " A "
-      + str(radius-br)
+      + to-str(radius-br)
       + " "
-      + str(radius-br)
+      + to-str(radius-br)
       + " 0 0 1 "
-      + str(rect-dx + rect-width - radius-br)
+      + to-str(rect-dx + rect-width - radius-br)
       + ", "
-      + str(rect-dy + rect-height)
+      + to-str(rect-dy + rect-height)
       + " H "
-      + str(rect-dx + radius-bl)
+      + to-str(rect-dx + radius-bl)
       + " A "
-      + str(radius-bl)
+      + to-str(radius-bl)
       + " "
-      + str(radius-bl)
+      + to-str(radius-bl)
       + " 0 0 1 "
-      + str(rect-dx)
+      + to-str(rect-dx)
       + ", "
-      + str(rect-dy + rect-height - radius-bl)
+      + to-str(rect-dy + rect-height - radius-bl)
       + " V "
-      + str(rect-dy + radius-tl)
+      + to-str(rect-dy + radius-tl)
       + " A "
-      + str(radius-tl)
+      + to-str(radius-tl)
       + " "
-      + str(radius-tl)
+      + to-str(radius-tl)
       + " 0 0 1 "
-      + str(rect-dx + radius-tl)
+      + to-str(rect-dx + radius-tl)
       + ", "
-      + str(rect-dy)
+      + to-str(rect-dy)
       + " Z \" fill=\""
-      + str(fill)
+      + to-str(fill)
       + "\" filter=\"url(#shadow)\" /> </svg>"
   )
 }
