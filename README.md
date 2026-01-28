@@ -21,7 +21,7 @@ Box shadows for [Typst](https://typst.app/).
 ## Parameters
 
 ```typ
-/// A drop shadow.
+/// A box shadow.
 /// -> content
 #let shadow(
   /// The horizontal offset.

@@ -379,7 +379,7 @@
   )
 }
 
-/// A drop shadow.
+/// A box shadow.
 ///
 /// ```example
 /// #shadow(blur: 6pt, spread: 2pt)[
