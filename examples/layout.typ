@@ -5,19 +5,30 @@
 
 #set page(margin: 15pt, height: auto, width: auto)
 
-// Visualize padding around shadow. This is not part of the example.
-#show: it => [
-  #block(stroke: (paint: black, thickness: 0.3pt, dash: "densely-dashed"))[
-    #it
-  ]
+// Visualize layout around shadow. This is not part of the example.
+#let visualize-layout(it) = block(stroke: (paint: red, thickness: 4pt), inset: 2pt)[
+  #it
 ]
 
 #let blur = 4pt
 #let spread = 2pt
 
-// Padding has to consist of the blur + the spread.
-#pad(blur + spread)[
+#let with-affecting-layout = pad(blur + spread)[
   #shadow(blur: blur, spread: spread)[
-    #block(height: 20pt, width: 20pt, fill: white)
+    #block(height: 120pt, width: 120pt, fill: white)
   ]
 ]
+
+#let without-affecting-layout = shadow(blur: blur, spread: spread)[
+  #block(height: 120pt, width: 120pt, fill: white)
+]
+
+
+#grid(
+  columns: 2,
+  align: center + horizon,
+  inset: 5pt,
+  visualize-layout(with-affecting-layout), visualize-layout(without-affecting-layout),
+  "With affecting layout", "Without affecting layout",
+)
+

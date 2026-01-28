@@ -16,7 +16,7 @@ Box shadows for [Typst](https://typst.app/).
 ]
 ```
 
-![Example](examples/lorem.png)
+![Minimal usage example](examples/lorem.svg)
 
 ## Parameters
 
@@ -69,6 +69,51 @@ Box shadows for [Typst](https://typst.app/).
   body,
 ) = { ... }
 ```
+
+## Examples
+
+### Layout
+
+By default `shadow` does not affect the layout and just draws the shadow behind its content. This can lead to overlapping elements. To prevent this a `pad` of `blur + spread` can be applied.
+
+```typ
+#let blur = 4pt
+#let spread = 2pt
+
+// Padding has to consist of the blur + the spread.
+#pad(blur + spread)[
+  #shadow(blur: blur, spread: spread)[
+    #block(height: 120pt, width: 120pt, fill: white)
+  ]
+]
+```
+
+For comparison, here are two shadows where one affects the layout while the other does not:
+
+![Layout example](examples/layout.svg)
+
+### Fill
+
+The fill of a shadow can consist of nothing, a solid color or a gradient. Currently only linear and radial gradients are supported.
+
+```typ
+// Solid color
+#shadow(blur 3pt, fill: color.teal)[
+  #block(width: 120pt, height: 120pt)
+]
+
+// Linear gradient
+#shadow(blur 3pt, fill: gradient.linear(..color.map.rainbow, angle: 45deg))[
+  #block(width: 120pt, height: 120pt)
+]
+
+// Radial gradient
+#shadow(blur 3pt, fill: gradient.radial(..color.map.plasma, center: (40%, 40%)))[
+  #block(width: 120pt, height: 120pt)
+]
+```
+
+![Fill example](examples/fill.svg)
 
 ## Credits
 
