@@ -427,6 +427,7 @@
   radius: 0pt,
   /// The content to place in front of the shadow.
   /// -> content
+  body,
 ) = layout(
   size => {
     // Type checks
