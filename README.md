@@ -43,7 +43,7 @@ Box shadows for [Typst](https://typst.app/).
   /// 
   /// Currently only supports linear or radial gradients.
   /// 
-  /// -> color | gradient
+  /// -> color | gradient | none
   fill: black,
   /// How much to round the shadow's corners.
   /// 

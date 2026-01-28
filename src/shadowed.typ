@@ -409,8 +409,8 @@
   /// How to fill the shadow.
   ///
   /// Currently only supports linear or radial gradients.
-  /// 
-  /// -> color | gradient
+  ///
+  /// -> color | gradient | none
   fill: black,
   /// How much to round the shadow's corners.
   ///
@@ -442,8 +442,8 @@
     assert(type(blur) == length, message: "shadow: blur must be of type length")
     assert(type(spread) == length, message: "shadow: spread must be of type length")
     assert(
-      type(fill) == color or type(fill) == gradient,
-      message: "shadow: fill must be of type color or gradient",
+      type(fill) == color or type(fill) == gradient or fill == none,
+      message: "shadow: fill must be of type color or gradient or none",
     )
     assert(
       type(radius) == length or type(radius) == dictionary,
@@ -470,6 +470,13 @@
     // Return empty block if width or height are zero to avoid issues with dividing by zero
     if (width == 0pt or height == 0pt) {
       return block()
+    }
+
+    // Retuns only the body if no fill is specified
+    if (fill == none) {
+      return block(width: width, height: height)[
+        #body
+      ]
     }
 
     let outset = calc.max(blur + spread, 0pt)
