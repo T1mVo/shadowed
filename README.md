@@ -9,7 +9,7 @@ Box shadows for [Typst](https://typst.app/).
 
 #set par(justify: true)
 
-#shadow(blur: 8pt, color: rgb(89, 85, 101, 25%), radius: 4pt)[
+#shadow(blur: 8pt, fill: rgb(89, 85, 101, 25%), radius: 4pt)[
   #block(fill: white, radius: 4pt, inset: 12pt)[
     #lorem(50)
   ]
@@ -18,35 +18,60 @@ Box shadows for [Typst](https://typst.app/).
 
 ![Example](examples/lorem.png)
 
-## Reference
+## Parameters
 
-### `shadowed`
-
-```typst
-#let shadowed(
-  fill: white,
+```typ
+/// A drop shadow.
+/// -> content
+#let shadow(
+  /// The horizontal offset.
+  /// -> length
+  dx: 0pt,
+  /// The vertical offset.
+  /// -> length
+  dy: 0pt,
+  /// How strong to blur the shadow.
+  /// 
+  /// Must be equal to or greater than 0pt.
+  /// 
+  /// -> length
+  blur: 0pt,
+  /// How far to spread the length of the shadow.
+  /// 
+  /// Must be equal to or greater than 0pt.
+  /// 
+  /// -> length
+  spread: 0pt,
+  /// How to fill the shadow.
+  /// 
+  /// Currently only supports linear or radial gradients.
+  /// 
+  /// -> color | gradient
+  fill: black,
+  /// How much to round the shadow's corners.
+  /// 
+  /// Can be either:
+  /// - A relative length for a uniform corner radius.
+  /// 
+  /// - A dictionary: With a dictionary, the stroke for each side can be set individually.
+  ///   The dictionary can contain the following keys in order of precedence:
+  ///   - top-left: The top-left corner radius.
+  ///   - top-right: The top-right corner radius.
+  ///   - bottom-right: The bottom-right corner radius.
+  ///   - bottom-left: The bottom-left corner radius.
+  ///   - left: The top-left and bottom-left corner radii.
+  ///   - top: The top-left and top-right corner radii.
+  ///   - right: The top-right and bottom-right corner radii.
+  ///   - bottom: The bottom-left and bottom-right corner radii.
+  ///   - rest: The radii for all corners except those for which the dictionary explicitly sets a size.
+  /// 
+  /// -> length | dictionary
   radius: 0pt,
-  inset: 0pt,
-  clip: false,
-  shadow: 8pt,
-  color: rgb(89, 85, 101, 30%),
+  /// The content to place in front of the shadow.
+  /// -> content
   body,
 ) = { ... }
 ```
-
-- **Input Arguments**
-    - `fill` : [`color`] The block's background color.
-    - `radius` : [`length`] How much to round the block's corners.
-    - `inset` : [`length] How much to pad the block's content.
-    - `clip` : [`bool`] Whether to clip the content inside the block.
-    - `shadow` : [`length`] Blur radius of the shadow. Also adds a padding of the same size.
-    - `color` : [`color`] Color of the shadow.
-    - `dx` : [`relative`] The horizontal displacement of the shadow. Does not alter the block's padding.
-    - `dy` : [`relative`] The vertical displacement of the shadow. Does not alter the block's padding.
-    - `body` : [`content`] The contents of the block.
-
-- **Output**
-    - [`content`]
 
 ## Credits
 

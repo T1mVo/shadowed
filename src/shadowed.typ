@@ -4,8 +4,8 @@
 ///
 /// Alternative str constructor that renders negative numbers
 /// with a ASCII minus sign.
-/// 
-/// - value (str, int, float): 
+///
+/// - value (str, int, float):
 /// -> str
 #let to-str(value) = {
   if type(value) == str {
@@ -379,7 +379,55 @@
   )
 }
 
-#let shadow(dx: 0pt, dy: 0pt, blur: 0pt, spread: 0pt, fill: black, radius: 0pt, body) = layout(
+/// A drop shadow.
+/// -> content
+#let shadow(
+  /// The horizontal offset.
+  /// -> length
+  dx: 0pt,
+  /// The vertical offset.
+  /// -> length
+  dy: 0pt,
+  /// How strong to blur the shadow.
+  /// 
+  /// Must be equal to or greater than 0pt.
+  /// 
+  /// -> length
+  blur: 0pt,
+  /// How far to spread the length of the shadow.
+  /// 
+  /// Must be equal to or greater than 0pt.
+  /// 
+  /// -> length
+  spread: 0pt,
+  /// How to fill the shadow.
+  /// 
+  /// Currently only supports linear or radial gradients.
+  /// 
+  /// -> color | gradient
+  fill: black,
+  /// How much to round the shadow's corners.
+  /// 
+  /// Can be either:
+  /// - A relative length for a uniform corner radius.
+  /// 
+  /// - A dictionary: With a dictionary, the stroke for each side can be set individually.
+  ///   The dictionary can contain the following keys in order of precedence:
+  ///   - top-left: The top-left corner radius.
+  ///   - top-right: The top-right corner radius.
+  ///   - bottom-right: The bottom-right corner radius.
+  ///   - bottom-left: The bottom-left corner radius.
+  ///   - left: The top-left and bottom-left corner radii.
+  ///   - top: The top-left and top-right corner radii.
+  ///   - right: The top-right and bottom-right corner radii.
+  ///   - bottom: The bottom-left and bottom-right corner radii.
+  ///   - rest: The radii for all corners except those for which the dictionary explicitly sets a size.
+  /// 
+  /// -> length | dictionary
+  radius: 0pt,
+  /// The content to place in front of the shadow.
+  /// -> content
+) = layout(
   size => {
     // Type checks
     assert(type(dx) == length, message: "shadow: dx must be of type length")
