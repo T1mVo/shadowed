@@ -37,9 +37,6 @@ Box shadows for [Typst](https://typst.app/).
   /// -> length
   blur: 0pt,
   /// How far to spread the length of the shadow.
-  /// 
-  /// Must be equal to or greater than 0pt.
-  /// 
   /// -> length
   spread: 0pt,
   /// How to fill the shadow.

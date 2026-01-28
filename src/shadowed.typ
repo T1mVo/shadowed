@@ -380,6 +380,15 @@
 }
 
 /// A drop shadow.
+///
+/// ```example
+/// #shadow(blur: 6pt, spread: 2pt)[
+///   #block(inset: 4pt, fill: white)[
+///    #text("This block has a shadow!")
+///  ]
+/// ]
+/// ```
+///
 /// -> content
 #let shadow(
   /// The horizontal offset.
@@ -389,28 +398,25 @@
   /// -> length
   dy: 0pt,
   /// How strong to blur the shadow.
-  /// 
+  ///
   /// Must be equal to or greater than 0pt.
-  /// 
+  ///
   /// -> length
   blur: 0pt,
   /// How far to spread the length of the shadow.
-  /// 
-  /// Must be equal to or greater than 0pt.
-  /// 
   /// -> length
   spread: 0pt,
   /// How to fill the shadow.
-  /// 
+  ///
   /// Currently only supports linear or radial gradients.
   /// 
   /// -> color | gradient
   fill: black,
   /// How much to round the shadow's corners.
-  /// 
+  ///
   /// Can be either:
   /// - A relative length for a uniform corner radius.
-  /// 
+  ///
   /// - A dictionary: With a dictionary, the stroke for each side can be set individually.
   ///   The dictionary can contain the following keys in order of precedence:
   ///   - top-left: The top-left corner radius.
@@ -422,7 +428,7 @@
   ///   - right: The top-right and bottom-right corner radii.
   ///   - bottom: The bottom-left and bottom-right corner radii.
   ///   - rest: The radii for all corners except those for which the dictionary explicitly sets a size.
-  /// 
+  ///
   /// -> length | dictionary
   radius: 0pt,
   /// The content to place in front of the shadow.
