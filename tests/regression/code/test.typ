@@ -1,4 +1,4 @@
-#import "../../src/lib.typ": shadow
+#import "../../../src/lib.typ": shadow
 
 #set page(margin: 10pt, width: auto, height: auto)
 
