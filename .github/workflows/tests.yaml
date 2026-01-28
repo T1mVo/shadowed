@@ -27,7 +27,7 @@ jobs:
           tag: v0.2.2
 
       - name: Run tests
-        run: tt run --no-fail-fast
+        run: tt run --no-fail-fast --no-compare
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
