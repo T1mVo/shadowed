@@ -311,6 +311,7 @@
   let gradient = if type(fill) == gradient { gradient-template(fill, svg-width, svg-height) } else { "" }
   let fill = if type(fill) == color { fill.to-hex() } else { "url(#gradient)" }
   let spread-operator = if spread-radius >= 0 { "dilate" } else { "erode" }
+  let spread-radius = calc.abs(spread-radius)
 
   (
     "<svg viewBox=\"0 0 "
