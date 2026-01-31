@@ -462,6 +462,11 @@
       }
     }
 
+    // Return only the body if no fill is specified
+    if (fill == none) {
+      body
+    }
+
     let (width, height) = measure(width: size.width, height: size.height)[
       #body
     ]
@@ -469,13 +474,6 @@
     // Return empty block if width or height are zero to avoid issues with dividing by zero
     if (width == 0pt or height == 0pt) {
       return block()
-    }
-
-    // Retuns only the body if no fill is specified
-    if (fill == none) {
-      return block(width: width, height: height)[
-        #body
-      ]
     }
 
     let outset = calc.max(blur + spread, 0pt)
