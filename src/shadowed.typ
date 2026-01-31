@@ -80,7 +80,7 @@
 #let interpolate-stops(gradient) = {
   let in-stops = gradient.stops()
   let stop-count = in-stops.len()
-  let len = calc.max(int(256 / stop-count), 2)
+  let default-len = calc.max(int(256 / stop-count), 2)
   let stops = ()
 
   for (from, to) in in-stops.windows(2) {
@@ -91,9 +91,7 @@
     let delta = to-offset - from-offset
 
     // No interpolation needed for identical colors
-    if from-color == to-color {
-      len = 1
-    }
+    let len = if from-color == to-color { 1 } else { default-len }
 
     stops.push((from-color, from-offset))
 
