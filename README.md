@@ -2,7 +2,15 @@
 
 Box shadows for [Typst](https://typst.app/).
 
-## Usage
+## Installation
+
+Add the package to your Typst document:
+
+```typ
+#import "@preview/shadowed:0.3.0": shadow
+```
+
+## Quick Start
 
 ```typ
 #import "@preview/shadowed:0.3.0": shadow
@@ -98,22 +106,82 @@ The fill of a shadow can consist of nothing, a solid color or a gradient. Curren
 
 ```typ
 // Solid color
-#shadow(blur 3pt, fill: color.teal)[
+#shadow(blur: 3pt, fill: color.teal)[
   #block(width: 120pt, height: 120pt)
 ]
 
 // Linear gradient
-#shadow(blur 3pt, fill: gradient.linear(..color.map.rainbow, angle: 45deg))[
+#shadow(blur: 3pt, fill: gradient.linear(..color.map.rainbow, angle: 45deg))[
   #block(width: 120pt, height: 120pt)
 ]
 
 // Radial gradient
-#shadow(blur 3pt, fill: gradient.radial(..color.map.plasma, center: (40%, 40%)))[
+#shadow(blur: 3pt, fill: gradient.radial(..color.map.plasma, center: (40%, 40%)))[
   #block(width: 120pt, height: 120pt)
 ]
 ```
 
 ![Fill example](examples/fill.svg)
+
+### Offset
+
+Control the shadow position with `dx` and `dy` parameters:
+
+```typ
+// Shadow offset to the bottom-right
+#shadow(dx: 3pt, dy: 3pt, blur: 4pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+
+// Shadow offset to the top-left
+#shadow(dx: -3pt, dy: -3pt, blur: 4pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+```
+
+![Offset example](examples/offset.svg)
+
+### Spread
+
+The `spread` parameter controls how much the shadow expands or contracts:
+
+```typ
+// Positive spread makes the shadow larger
+#shadow(blur: 4pt, spread: 4pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+
+// Negative spread makes the shadow smaller
+#shadow(blur: 4pt, spread: -2pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+```
+
+![Spread example](examples/spread.svg)
+
+### Custom Radius
+
+You can set individual corner radii using a dictionary:
+
+```typ
+#shadow(
+  blur: 4pt,
+  radius: (
+    top-left: 0pt,
+    top-right: 8pt,
+    bottom-right: 0pt,
+    bottom-left: 8pt,
+  )
+)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+```
+
+![Custom radius example](examples/radius.svg)
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Credits
 
