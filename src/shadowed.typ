@@ -69,7 +69,10 @@
       "bottom-right": bottom-right,
     )
   } else {
-    panic("normalize-radius: radius must be of type length or dictionary, got " + str(type(radius)))
+    panic(
+      "normalize-radius: radius must be of type length or dictionary, got "
+        + str(type(radius)),
+    )
   }
 }
 
@@ -141,7 +144,9 @@
 /// - ratio (int, float): The ratio.
 /// -> angle
 #let correct-angle(angle, ratio) = {
-  let rad = calc.atan(calc.tan(calc.rem-euclid(angle.rad(), calc.tau)) / ratio).rad()
+  let rad = calc
+    .atan(calc.tan(calc.rem-euclid(angle.rad(), calc.tau)) / ratio)
+    .rad()
   let quadrant = angle-quadrant(angle)
 
   // rad stays the same in quadrant 1
@@ -189,7 +194,15 @@
   let stop-color = stop.at(0).to-hex()
   let offset = stop.at(1) / 1%
 
-  "<stop offset=\"" + to-str(offset) + "%\" stop-color=\"" + to-str(stop-color) + "\" />"
+  // begin templates/stop.svg.template
+  (
+    "<stop offset=\"",
+    to-str(offset),
+    "%\" stop-color=\"",
+    to-str(stop-color),
+    "\" />",
+  ).join()
+  // end templates/stop.svg.template
 }
 
 /// Renders a linear gradient.
@@ -202,25 +215,31 @@
   let interpolated-stops = interpolate-stops(gradient)
   let stops = interpolated-stops.map(stop => stop-template(stop)).join()
 
-  let (x1, y1, x2, y2) = calculate-gradient-vector(gradient.angle(), gradient-width, gradient-height)
-
-  (
-    "<linearGradient id=\"gradient\" gradientUnits=\"userSpaceOnUse\" x1=\""
-      + to-str(x1)
-      + "\" y1=\""
-      + to-str(y1)
-      + "\" x2=\""
-      + to-str(x2)
-      + "\" y2=\""
-      + to-str(y2)
-      + "\" gradientTransform=\"matrix("
-      + to-str(gradient-width)
-      + " 0 0 "
-      + to-str(gradient-height)
-      + " 0 0)\"> "
-      + to-str(stops)
-      + " </linearGradient>"
+  let (x1, y1, x2, y2) = calculate-gradient-vector(
+    gradient.angle(),
+    gradient-width,
+    gradient-height,
   )
+
+  // begin templates/linear-gradient.svg.template
+  (
+    "<linearGradient id=\"gradient\" gradientUnits=\"userSpaceOnUse\" x1=\"",
+    to-str(x1),
+    "\" y1=\"",
+    to-str(y1),
+    "\" x2=\"",
+    to-str(x2),
+    "\" y2=\"",
+    to-str(y2),
+    "\" gradientTransform=\"matrix(",
+    to-str(gradient-width),
+    " 0 0 ",
+    to-str(gradient-height),
+    " 0 0)\"> ",
+    to-str(stops),
+    " </linearGradient>",
+  ).join()
+  // end templates/linear-gradient.svg.template
 }
 
 /// Renders a radial gradient.
@@ -236,27 +255,29 @@
   let focal-radius = gradient.focal-radius() / 100%
   let stops = gradient.stops().map(stop => stop-template(stop)).join()
 
+  // begin templates/radial-gradient.svg.template
   (
-    "<radialGradient id=\"gradient\" gradientUnits=\"userSpaceOnUse\" cx=\""
-      + to-str(center-x)
-      + "\" cy=\""
-      + to-str(center-y)
-      + "\" fx=\""
-      + to-str(focal-center-x)
-      + "\" fy=\""
-      + to-str(focal-center-y)
-      + "\" r=\""
-      + to-str(radius)
-      + "\" fr=\""
-      + to-str(focal-radius)
-      + "\" gradientTransform=\"matrix("
-      + to-str(gradient-width)
-      + " 0 0 "
-      + to-str(gradient-height)
-      + " 0 0)\"> "
-      + to-str(stops)
-      + " </radialGradient>"
-  )
+    "<radialGradient id=\"gradient\" gradientUnits=\"userSpaceOnUse\" cx=\"",
+    to-str(center-x),
+    "\" cy=\"",
+    to-str(center-y),
+    "\" fx=\"",
+    to-str(focal-center-x),
+    "\" fy=\"",
+    to-str(focal-center-y),
+    "\" r=\"",
+    to-str(radius),
+    "\" fr=\"",
+    to-str(focal-radius),
+    "\" gradientTransform=\"matrix(",
+    to-str(gradient-width),
+    " 0 0 ",
+    to-str(gradient-height),
+    " 0 0)\"> ",
+    to-str(stops),
+    " </radialGradient>",
+  ).join()
+  // end templates/radial-gradient.svg.template
 }
 
 /// Renders a gradient based on its kind.
@@ -306,76 +327,80 @@
   radius-bl: none,
   radius-br: none,
 ) = {
-  let gradient = if type(fill) == gradient { gradient-template(fill, svg-width, svg-height) } else { "" }
+  let gradient = if type(fill) == gradient {
+    gradient-template(fill, svg-width, svg-height)
+  } else { "" }
   let fill = if type(fill) == color { fill.to-hex() } else { "url(#gradient)" }
   let spread-operator = if spread-radius >= 0 { "dilate" } else { "erode" }
   let spread-radius = calc.abs(spread-radius)
 
+  // begin templates/shadow.svg.template
   (
-    "<svg viewBox=\"0 0 "
-      + to-str(svg-width)
-      + " "
-      + to-str(svg-height)
-      + "\" height=\""
-      + to-str(svg-height)
-      + "pt\" width=\""
-      + to-str(svg-width)
-      + "pt\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <defs> "
-      + to-str(gradient)
-      + " <filter id=\"shadow\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"-10%\" y=\"-10%\" width=\"120%\" height=\"120%\"> <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\""
-      + to-str(blur-deviation)
-      + "\" result=\"blur\" /> <feMorphology operator=\""
-      + to-str(spread-operator)
-      + "\" radius=\""
-      + to-str(spread-radius)
-      + "\" in=\"blur\" result=\"spread\" /> </filter> </defs> <path d=\" M "
-      + to-str(rect-dx + radius-tl)
-      + ", "
-      + to-str(rect-dy)
-      + " H "
-      + to-str(rect-dx + rect-width - radius-tr)
-      + " A "
-      + to-str(radius-tr)
-      + " "
-      + to-str(radius-tr)
-      + " 0 0 1 "
-      + to-str(rect-dx + rect-width)
-      + ", "
-      + to-str(rect-dy + radius-tr)
-      + " V "
-      + to-str(rect-dy + rect-height - radius-br)
-      + " A "
-      + to-str(radius-br)
-      + " "
-      + to-str(radius-br)
-      + " 0 0 1 "
-      + to-str(rect-dx + rect-width - radius-br)
-      + ", "
-      + to-str(rect-dy + rect-height)
-      + " H "
-      + to-str(rect-dx + radius-bl)
-      + " A "
-      + to-str(radius-bl)
-      + " "
-      + to-str(radius-bl)
-      + " 0 0 1 "
-      + to-str(rect-dx)
-      + ", "
-      + to-str(rect-dy + rect-height - radius-bl)
-      + " V "
-      + to-str(rect-dy + radius-tl)
-      + " A "
-      + to-str(radius-tl)
-      + " "
-      + to-str(radius-tl)
-      + " 0 0 1 "
-      + to-str(rect-dx + radius-tl)
-      + ", "
-      + to-str(rect-dy)
-      + " Z \" fill=\""
-      + to-str(fill)
-      + "\" filter=\"url(#shadow)\" /> </svg>"
-  )
+    "<svg viewBox=\"0 0 ",
+    to-str(svg-width),
+    " ",
+    to-str(svg-height),
+    "\" height=\"",
+    to-str(svg-height),
+    "pt\" width=\"",
+    to-str(svg-width),
+    "pt\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <defs> ",
+    to-str(gradient),
+    " <filter id=\"shadow\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"-10%\" y=\"-10%\" width=\"120%\" height=\"120%\"> <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"",
+    to-str(blur-deviation),
+    "\" result=\"blur\" /> <feMorphology operator=\"",
+    to-str(spread-operator),
+    "\" radius=\"",
+    to-str(spread-radius),
+    "\" in=\"blur\" result=\"spread\" /> </filter> </defs> <path d=\" M ",
+    to-str(rect-dx + radius-tl),
+    ", ",
+    to-str(rect-dy),
+    " H ",
+    to-str(rect-dx + rect-width - radius-tr),
+    " A ",
+    to-str(radius-tr),
+    " ",
+    to-str(radius-tr),
+    " 0 0 1 ",
+    to-str(rect-dx + rect-width),
+    ", ",
+    to-str(rect-dy + radius-tr),
+    " V ",
+    to-str(rect-dy + rect-height - radius-br),
+    " A ",
+    to-str(radius-br),
+    " ",
+    to-str(radius-br),
+    " 0 0 1 ",
+    to-str(rect-dx + rect-width - radius-br),
+    ", ",
+    to-str(rect-dy + rect-height),
+    " H ",
+    to-str(rect-dx + radius-bl),
+    " A ",
+    to-str(radius-bl),
+    " ",
+    to-str(radius-bl),
+    " 0 0 1 ",
+    to-str(rect-dx),
+    ", ",
+    to-str(rect-dy + rect-height - radius-bl),
+    " V ",
+    to-str(rect-dy + radius-tl),
+    " A ",
+    to-str(radius-tl),
+    " ",
+    to-str(radius-tl),
+    " 0 0 1 ",
+    to-str(rect-dx + radius-tl),
+    ", ",
+    to-str(rect-dy),
+    " Z \" fill=\"",
+    to-str(fill),
+    "\" filter=\"url(#shadow)\" /> </svg>",
+  ).join()
+  // end templates/shadow.svg.template
 }
 
 /// A box shadow.
@@ -439,7 +464,10 @@
     assert(type(dx) == length, message: "shadow: dx must be of type length")
     assert(type(dy) == length, message: "shadow: dy must be of type length")
     assert(type(blur) == length, message: "shadow: blur must be of type length")
-    assert(type(spread) == length, message: "shadow: spread must be of type length")
+    assert(
+      type(spread) == length,
+      message: "shadow: spread must be of type length",
+    )
     assert(
       type(fill) == color or type(fill) == gradient or fill == none,
       message: "shadow: fill must be of type color or gradient or none",
@@ -450,15 +478,27 @@
     )
 
     // Value checks
-    assert(blur >= 0pt, message: "shadow: blur must be greater or equal to zero")
+    assert(
+      blur >= 0pt,
+      message: "shadow: blur must be greater or equal to zero",
+    )
 
     // Conditional checks based on radius type
     if type(radius) == length {
-      assert(radius >= 0pt, message: "shadow: radius must be greater or equal to zero")
+      assert(
+        radius >= 0pt,
+        message: "shadow: radius must be greater or equal to zero",
+      )
     } else {
       for r in radius.values() {
-        assert(type(r) == length, message: "shadow: radius values must be of type length")
-        assert(r >= 0pt, message: "shadow: radius values must be greater or equal to zero")
+        assert(
+          type(r) == length,
+          message: "shadow: radius values must be of type length",
+        )
+        assert(
+          r >= 0pt,
+          message: "shadow: radius values must be greater or equal to zero",
+        )
       }
     }
 
@@ -499,7 +539,13 @@
       radius-bl: radius.at("bottom-left").pt(),
       radius-br: radius.at("bottom-right").pt(),
     )
-    let svg = image(bytes(svg-source), height: svg-height, width: svg-width, format: "svg", alt: "box-shadow")
+    let svg = image(
+      bytes(svg-source),
+      height: svg-height,
+      width: svg-width,
+      format: "svg",
+      alt: "box-shadow",
+    )
 
     block(breakable: false)[
       #place(center + horizon, dx: dx, dy: dy)[
