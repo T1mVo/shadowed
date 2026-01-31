@@ -9,3 +9,4 @@ repository = "https://github.com/T1mVo/shadowed"
 keywords = ["shadow", "box-shadow"]
 categories = ["components"]
 compiler = "0.13.0"
+exclude = ["examples"]
