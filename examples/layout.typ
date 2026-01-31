@@ -6,7 +6,10 @@
 #set page(margin: 15pt, height: auto, width: auto)
 
 // Visualize layout around shadow. This is not part of the example.
-#let visualize-layout(it) = block(stroke: (paint: red, thickness: 4pt), inset: 2pt)[
+#let visualize-layout(it) = block(
+  stroke: (paint: red, thickness: 4pt),
+  inset: 2pt,
+)[
   #it
 ]
 
@@ -28,7 +31,9 @@
   columns: 2,
   align: center + horizon,
   inset: 5pt,
-  visualize-layout(with-affecting-layout), visualize-layout(without-affecting-layout),
+  visualize-layout(with-affecting-layout),
+  visualize-layout(without-affecting-layout),
+
   "With affecting layout", "Without affecting layout",
 )
 

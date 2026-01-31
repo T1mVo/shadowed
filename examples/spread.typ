@@ -20,5 +20,8 @@
   shadow(blur: 4pt, spread: -2pt)[
     #block(width: 100pt, height: 100pt, fill: white)
   ],
-  "Positive spread", "No spread", "Negative spread",
+  "Positive spread",
+  "No spread",
+
+  "Negative spread",
 )

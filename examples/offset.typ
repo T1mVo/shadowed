@@ -16,5 +16,7 @@
   shadow(dx: -1pt, dy: -1pt, blur: 4pt)[
     #block(width: 100pt, height: 100pt, fill: white)
   ],
-  "Bottom-right offset", "Top-left offset",
+  "Bottom-right offset",
+
+  "Top-left offset",
 )

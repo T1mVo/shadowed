@@ -13,6 +13,9 @@
   columns: 3,
   align: center + horizon,
   inset: 5pt,
-  shadow(fill: solid-color), shadow(fill: linear-gradient), shadow(fill: radial-gradient),
+  shadow(fill: solid-color),
+  shadow(fill: linear-gradient),
+  shadow(fill: radial-gradient),
+
   "Solid color", "Linear gradient", "Radial gradient",
 )
