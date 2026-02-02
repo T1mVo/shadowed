@@ -1,4 +1,4 @@
-/// [skip]
+/// [max-deviations: 40]
 
 #import "../../../src/lib.typ": shadow
 
