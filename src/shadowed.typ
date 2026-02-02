@@ -549,7 +549,7 @@
 
     block(breakable: false)[
       #place(center + horizon, dx: dx, dy: dy)[
-        #svg
+        #svg <shadowed-shadow>
       ]
 
       #body
