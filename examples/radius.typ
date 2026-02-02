@@ -4,6 +4,13 @@
 
 #set page(margin: 15pt, height: auto, width: auto)
 
+#let custom-radius = (
+  top-left: 0pt,
+  top-right: 8pt,
+  bottom-right: 0pt,
+  bottom-left: 8pt,
+)
+
 #grid(
   columns: 2,
   align: center + horizon,
@@ -15,23 +22,13 @@
   // Custom per-corner radius
   shadow(
     blur: 4pt,
-    radius: (
-      top-left: 0pt,
-      top-right: 8pt,
-      bottom-right: 0pt,
-      bottom-left: 8pt,
-    ),
+    radius: custom-radius,
   )[
     #block(
       width: 100pt,
       height: 100pt,
       fill: white,
-      radius: (
-        top-left: 0pt,
-        top-right: 8pt,
-        bottom-right: 0pt,
-        bottom-left: 8pt,
-      ),
+      radius: custom-radius,
     )
   ],
   "Uniform radius",
