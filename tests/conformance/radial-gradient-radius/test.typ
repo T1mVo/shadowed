@@ -1,5 +1,5 @@
-/// [max-delta: 19]
-/// [max-deviations: 45]
+/// [max-delta: 7]
+/// [max-deviations: 21]
 
 #import "../../../src/lib.typ": shadow
 
