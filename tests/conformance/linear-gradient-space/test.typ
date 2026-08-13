@@ -1,5 +1,4 @@
-/// [max-delta: 18]
-/// [max-deviations: 600]
+/// [max-delta: 10]
 #import "../../../src/lib.typ": shadow
 
 #let page-layout = (width: 100pt, height: 100pt, margin: 0pt)
