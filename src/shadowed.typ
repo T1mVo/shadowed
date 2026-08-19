@@ -5,29 +5,43 @@
 /// Alternative str constructor that renders negative numbers
 /// with a ASCII minus sign.
 ///
-/// - value (str, int, float):
 /// -> str
-#let to-str(value) = {
+#let to-str(
+  /// The value to convert.
+  /// -> str | int | float
+  value,
+) = {
+  assert(
+    type(value) == str or type(value) == int or type(value) == float,
+    message: "to-str: value must be of type str, int or float, got "
+      + str(type(value)),
+  )
+
   if type(value) == str {
     value
-  } else if type(value) == int or type(value) == float {
+  } else {
     if value < 0 {
       "-" + str(-value)
     } else {
       str(value)
     }
-  } else {
-    panic("to-str: unsupported type " + str(type(value)))
   }
 }
 
 /// Convert a radius to a length.
 ///
-/// - radius (length, ratio, relative): The radius to convert.
-/// - width (length): The objects width.
-/// - height (length): The objects height.
 /// -> length
-#let convert-radius(radius, width, height) = {
+#let convert-radius(
+  /// The radius to convert.
+  /// -> length | ratio | relative
+  radius,
+  /// The objects width.
+  /// -> length
+  width,
+  /// The objects height.
+  /// -> length
+  height,
+) = {
   let radius = if type(radius) == length {
     radius
   } else if type(radius) == ratio {
@@ -45,14 +59,28 @@
 /// Returns a dictionary that contains the radius of each corner at
 /// "top-left", "top-right", "bottom-left", and "bottom-right".
 ///
-/// - radius (length, dictionary): The radius to normalize.
-/// - width (length): The length of the shadow.
-/// - height (length): The height of the shadow.
 /// -> dictionary
-#let normalize-radius(radius, width, height) = {
-  if (
-    type(radius) == length or type(radius) == ratio or type(radius) == relative
-  ) {
+#let normalize-radius(
+  /// The radius to normalize.
+  /// -> length | ratio | relative | dictionary
+  radius,
+  /// The length of the shadow.
+  /// -> length
+  width,
+  /// The height of the shadow.
+  /// -> length
+  height,
+) = {
+  assert(
+    type(radius) == length
+      or type(radius) == ratio
+      or type(radius) == relative
+      or type(radius) == dictionary,
+    message: "normalize-radius: radius must be of type length, ratio, relative or dictionary, got "
+      + str(type(radius)),
+  )
+
+  if type(radius) != dictionary {
     let radius = convert-radius(radius, width, height)
 
     (
@@ -61,7 +89,7 @@
       "bottom-left": radius,
       "bottom-right": radius,
     )
-  } else if type(radius) == dictionary {
+  } else {
     let top-left = radius.at("rest", default: 0pt)
     let top-right = radius.at("rest", default: 0pt)
     let bottom-left = radius.at("rest", default: 0pt)
@@ -93,21 +121,25 @@
       "bottom-left": convert-radius(bottom-left, width, height),
       "bottom-right": convert-radius(bottom-right, width, height),
     )
-  } else {
-    panic(
-      "normalize-radius: radius must be of type length, ratio, relative or dictionary, got "
-        + str(type(radius)),
-    )
   }
 }
 
 /// Interpolates the gradient stops based on the color space.
 ///
-/// - gradient (gradient): The gradient.
 /// -> array
-#let interpolate-stops(gradient) = {
+#let interpolate-stops(
+  /// The gradient.
+  /// -> gradient
+  gradient,
+) = {
   let in-stops = gradient.stops()
   let stop-count = in-stops.len()
+
+  // Avoid `windows(2)` returning nothing for degenerate gradients
+  if stop-count < 2 {
+    return in-stops
+  }
+
   let default-len = calc.max(int(256 / stop-count), 2)
   let stops = ()
 
@@ -147,9 +179,12 @@
 /// - 3: `180deg..=270deg` (bottom-left)
 /// - 4: `270deg..=360deg` (bottom-right)
 ///
-/// - angle (angle): The angle.
 /// -> int
-#let angle-quadrant(angle) = {
+#let angle-quadrant(
+  /// The angle.
+  /// -> angle
+  angle,
+) = {
   let normalized-angle = calc.rem-euclid(angle.deg(), 360) * 1deg
 
   if normalized-angle <= 90deg {
@@ -165,10 +200,15 @@
 
 /// Corrects the angle for gradient vector calculation based on the aspect ratio.
 ///
-/// - angle (angle): The angle.
-/// - ratio (int, float): The ratio.
 /// -> angle
-#let correct-angle(angle, ratio) = {
+#let correct-angle(
+  /// The angle.
+  /// -> angle
+  angle,
+  /// The ratio.
+  /// -> int | float
+  ratio,
+) = {
   let rad = calc
     .atan(calc.tan(calc.rem-euclid(angle.rad(), calc.tau)) / ratio)
     .rad()
@@ -188,11 +228,18 @@
 ///
 /// Returns the vector coordinates in form of (x1, y1, x2, y2).
 ///
-/// - angle (angle): The angle.
-/// - width (int, float, length): The width.
-/// - height (int, float, length): The height.
 /// -> array
-#let calculate-gradient-vector(angle, width, height) = {
+#let calculate-gradient-vector(
+  /// The angle.
+  /// -> angle
+  angle,
+  /// The width.
+  /// -> int | float | length
+  width,
+  /// The height.
+  /// -> int | float | length
+  height,
+) = {
   let ratio = width / height
   let angle = correct-angle(angle, ratio)
 
@@ -213,9 +260,12 @@
 
 /// Renders a gradient stop.
 ///
-/// - stop (list): The stop in form of (color, ratio).
 /// -> str
-#let stop-template(stop) = {
+#let stop-template(
+  /// The stop in the form of (color, ratio).
+  /// -> list
+  stop,
+) = {
   let stop-color = stop.at(0).to-hex()
   let offset = stop.at(1) / 1%
 
@@ -232,11 +282,18 @@
 
 /// Renders a linear gradient.
 ///
-/// - gradient (gradient): The gradient of kind gradient.linear.
-/// - gradient-width (int, float): The width of the gradient.
-/// - gradient-height (int, float): The height of the gradient.
 /// -> str
-#let linear-gradient-template(gradient, gradient-width, gradient-height) = {
+#let linear-gradient-template(
+  /// The gradient of kind gradient.linear.
+  /// -> gradient
+  gradient,
+  /// The width of the gradient.
+  /// -> int | float
+  gradient-width,
+  /// The height of the gradient.
+  /// -> int | float
+  gradient-height,
+) = {
   let interpolated-stops = interpolate-stops(gradient)
   let stops = interpolated-stops.map(stop => stop-template(stop)).join()
 
@@ -269,9 +326,18 @@
 
 /// Renders a radial gradient.
 ///
-/// - gradient (gradient): The gradient of kind gradient.radial.
 /// -> str
-#let radial-gradient-template(gradient, gradient-width, gradient-height) = {
+#let radial-gradient-template(
+  /// The gradient of kind gradient.radial.
+  /// -> gradient
+  gradient,
+  /// The width of the gradient.
+  /// -> int | float
+  gradient-width,
+  /// The height of the gradient.
+  /// -> int | float
+  gradient-height,
+) = {
   let center-x = gradient.center().at(0) / 100%
   let center-y = gradient.center().at(1) / 100%
   let focal-center-x = gradient.focal-center().at(0) / 100%
@@ -307,11 +373,18 @@
 
 /// Renders a gradient based on its kind.
 ///
-/// - gradient (gradient): The gradient of kind gradient.linear or gradient.radial.
-/// - gradient-width (int, float): The gradient width.
-/// - gradient-height (int, float): The gradient height.
 /// -> str
-#let gradient-template(gradient, gradient-width, gradient-height) = {
+#let gradient-template(
+  /// The gradient of kind gradient.linear or gradient.radial.
+  /// -> gradient
+  gradient,
+  /// The gradient width.
+  /// -> int | float
+  gradient-width,
+  /// The gradient height.
+  /// -> int | float
+  gradient-height,
+) = {
   if gradient.kind() == std.gradient.linear {
     linear-gradient-template(gradient, gradient-width, gradient-height)
   } else if gradient.kind() == std.gradient.radial {
@@ -321,64 +394,75 @@
   }
 }
 
-/// Renders a SVG box shadow.
+/// Resolves a fill to its string representation and optional gradient definition.
 ///
-/// - svg-width (int, float): The SVG width.
-/// - svg-height (int, float): The SVG height.
-/// - blur-deviation (int, float): The blur deviation.
-/// - spread-radius (int, float): The spread radius.
-/// - fill (color, gradient): The fill color or gradient.
-/// - rect-dx (int, float): The gradient x position.
-/// - rect-dy (int, float): The gradient y position.
-/// - rect-width (int, float): The gradient width.
-/// - rect-height (int, float): The gradient height.
-/// - radius-tl (int, float): The top-left radius.
-/// - radius-tr (int, float): The top-right radius.
-/// - radius-bl (int, float): The bottom-left radius.
-/// - radius-br (int, float): The bottom-right radius.
-/// -> str
-#let shadow-template(
-  svg-width: none,
-  svg-height: none,
-  blur-deviation: none,
-  spread-radius: none,
-  fill: none,
-  rect-dx: none,
-  rect-dy: none,
-  rect-width: none,
-  rect-height: none,
-  radius-tl: none,
-  radius-tr: none,
-  radius-bl: none,
-  radius-br: none,
+/// -> array
+#let resolve-fill(
+  /// The fill to resolve.
+  /// -> color | gradient
+  fill,
+  /// The SVG width.
+  /// -> int | float
+  svg-width,
+  /// The SVG height.
+  /// -> int | float
+  svg-height,
 ) = {
   let gradient = if type(fill) == gradient {
     gradient-template(fill, svg-width, svg-height)
-  } else { "" }
+  } else {
+    ""
+  }
   let fill = if type(fill) == color { fill.to-hex() } else { "url(#gradient)" }
-  let spread-operator = if spread-radius >= 0 { "dilate" } else { "erode" }
-    // A radius of 0 causes rendering issues: https://github.com/typst/typst/issues/7794
-  let spread-radius = calc.max(calc.abs(spread-radius), 0.001)
 
-  // begin templates/shadow.svg.template
+  (fill, gradient)
+}
+
+/// Returns the feMorphology operator for a spread radius.
+///
+/// -> str
+#let spread-operator(
+  /// The spread radius.
+  /// -> int | float
+  spread-radius,
+) = if spread-radius >= 0 {
+  "dilate"
+} else {
+  "erode"
+}
+
+/// Renders the path of a rounded rectangle.
+///
+/// -> str
+#let box-path(
+  /// The x position of the rectangle.
+  /// -> int | float
+  rect-dx: none,
+  /// The y position of the rectangle.
+  /// -> int | float
+  rect-dy: none,
+  /// The width of the rectangle.
+  /// -> int | float
+  rect-width: none,
+  /// The height of the rectangle.
+  /// -> int | float
+  rect-height: none,
+  /// The top-left radius.
+  /// -> int | float
+  radius-tl: none,
+  /// The top-right radius.
+  /// -> int | float
+  radius-tr: none,
+  /// The bottom-left radius.
+  /// -> int | float
+  radius-bl: none,
+  /// The bottom-right radius.
+  /// -> int | float
+  radius-br: none,
+) = {
+  // begin templates/box-path.svg.template
   (
-    "<svg viewBox=\"0 0 ",
-    to-str(svg-width),
-    " ",
-    to-str(svg-height),
-    "\" height=\"",
-    to-str(svg-height),
-    "pt\" width=\"",
-    to-str(svg-width),
-    "pt\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <defs> ",
-    to-str(gradient),
-    " <filter id=\"shadow\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"-10%\" y=\"-10%\" width=\"120%\" height=\"120%\"> <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"",
-    to-str(blur-deviation),
-    "\" result=\"blur\" /> <feMorphology operator=\"",
-    to-str(spread-operator),
-    "\" radius=\"",
-    to-str(spread-radius),
-    "\" in=\"blur\" result=\"spread\" /> </filter> </defs> <path d=\" M ",
+    "M ",
     to-str(rect-dx + radius-tl),
     ", ",
     to-str(rect-dy),
@@ -422,11 +506,213 @@
     to-str(rect-dx + radius-tl),
     ", ",
     to-str(rect-dy),
-    " Z \" fill=\"",
+    " Z",
+  ).join()
+  // end templates/box-path.svg.template
+}
+
+/// Renders a SVG box shadow.
+///
+/// -> str
+#let shadow-template(
+  /// The SVG width.
+  /// -> int | float
+  svg-width: none,
+  /// The SVG height.
+  /// -> int | float
+  svg-height: none,
+  /// The blur deviation.
+  /// -> int | float
+  blur-deviation: none,
+  /// The spread radius.
+  /// -> int | float
+  spread-radius: none,
+  /// The fill color or gradient.
+  /// -> color | gradient
+  fill: none,
+  /// The horizontal offset.
+  /// -> int | float
+  dx: none,
+  /// The vertical offset.
+  /// -> int | float
+  dy: none,
+  /// The gradient x position.
+  /// -> int | float
+  rect-dx: none,
+  /// The gradient y position.
+  /// -> int | float
+  rect-dy: none,
+  /// The gradient width.
+  /// -> int | float
+  rect-width: none,
+  /// The gradient height.
+  /// -> int | float
+  rect-height: none,
+  /// The top-left radius.
+  /// -> int | float
+  radius-tl: none,
+  /// The top-right radius.
+  /// -> int | float
+  radius-tr: none,
+  /// The bottom-left radius.
+  /// -> int | float
+  radius-bl: none,
+  /// The bottom-right radius.
+  /// -> int | float
+  radius-br: none,
+) = {
+  let (fill, gradient) = resolve-fill(fill, svg-width, svg-height)
+  let spread-operator = spread-operator(spread-radius)
+  // A radius of 0 causes rendering issues: https://github.com/typst/typst/issues/7794
+  let spread-radius = calc.max(calc.abs(spread-radius), 0.001)
+
+  // begin templates/shadow.svg.template
+  (
+    "<svg viewBox=\"0 0 ",
+    to-str(svg-width),
+    " ",
+    to-str(svg-height),
+    "\" height=\"",
+    to-str(svg-height),
+    "pt\" width=\"",
+    to-str(svg-width),
+    "pt\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <defs> ",
+    to-str(gradient),
+    " <filter id=\"shadow\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"-10%\" y=\"-10%\" width=\"120%\" height=\"120%\"> <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"",
+    to-str(blur-deviation),
+    "\" result=\"blur\" /> <feMorphology operator=\"",
+    to-str(spread-operator),
+    "\" radius=\"",
+    to-str(spread-radius),
+    "\" in=\"blur\" result=\"spread\" /> </filter> </defs> <g transform=\"translate(",
+    to-str(dx + calc.abs(dx)),
+    ",",
+    to-str(dy + calc.abs(dy)),
+    ")\"> <path d=\"",
+    to-str(box-path(
+      rect-dx: rect-dx,
+      rect-dy: rect-dy,
+      rect-width: rect-width,
+      rect-height: rect-height,
+      radius-tl: radius-tl,
+      radius-tr: radius-tr,
+      radius-bl: radius-bl,
+      radius-br: radius-br,
+    )),
+    "\" fill=\"",
     to-str(fill),
-    "\" filter=\"url(#shadow)\" /> </svg>",
+    "\" filter=\"url(#shadow)\" /> </g> </svg>",
   ).join()
   // end templates/shadow.svg.template
+}
+
+/// Renders a SVG inner box shadow.
+///
+/// -> str
+#let inset-shadow-template(
+  /// The SVG width.
+  /// -> int | float
+  svg-width: none,
+  /// The SVG height.
+  /// -> int | float
+  svg-height: none,
+  /// The blur deviation.
+  /// -> int | float
+  blur-deviation: none,
+  /// The spread radius.
+  /// -> int | float
+  spread-radius: none,
+  /// The fill color or gradient.
+  /// -> color | gradient
+  fill: none,
+  /// The horizontal offset.
+  /// -> int | float
+  dx: none,
+  /// The vertical offset.
+  /// -> int | float
+  dy: none,
+  /// The gradient x position.
+  /// -> int | float
+  rect-dx: none,
+  /// The gradient y position.
+  /// -> int | float
+  rect-dy: none,
+  /// The gradient width.
+  /// -> int | float
+  rect-width: none,
+  /// The gradient height.
+  /// -> int | float
+  rect-height: none,
+  /// The top-left radius.
+  /// -> int | float
+  radius-tl: none,
+  /// The top-right radius.
+  /// -> int | float
+  radius-tr: none,
+  /// The bottom-left radius.
+  /// -> int | float
+  radius-bl: none,
+  /// The bottom-right radius.
+  /// -> int | float
+  radius-br: none,
+) = {
+  let (fill, gradient) = resolve-fill(fill, svg-width, svg-height)
+  let spread-operator = spread-operator(spread-radius)
+  // A radius of 0 causes rendering issues: https://github.com/typst/typst/issues/7794
+  let spread-radius = calc.max(calc.abs(spread-radius), 0.001)
+
+  // begin templates/inset-shadow.svg.template
+  (
+    "<svg viewBox=\"0 0 ",
+    to-str(svg-width),
+    " ",
+    to-str(svg-height),
+    "\" height=\"",
+    to-str(svg-height),
+    "pt\" width=\"",
+    to-str(svg-width),
+    "pt\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <defs> ",
+    to-str(gradient),
+    " <path id=\"box-shape\" d=\"",
+    to-str(box-path(
+      rect-dx: rect-dx,
+      rect-dy: rect-dy,
+      rect-width: rect-width,
+      rect-height: rect-height,
+      radius-tl: radius-tl,
+      radius-tr: radius-tr,
+      radius-bl: radius-bl,
+      radius-br: radius-br,
+    )),
+    "\" /> <filter id=\"inset-shadow\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"",
+    to-str(svg-width),
+    "\" height=\"",
+    to-str(svg-height),
+    "\"> <feOffset in=\"SourceAlpha\" dx=\"",
+    to-str(dx),
+    "\" dy=\"",
+    to-str(dy),
+    "\" result=\"displaced\" /> <feComponentTransfer in=\"displaced\" result=\"inverted\"> <feFuncA type=\"table\" tableValues=\"1 0\" /> </feComponentTransfer> <feGaussianBlur in=\"inverted\" stdDeviation=\"",
+    to-str(blur-deviation),
+    "\" result=\"blurred\" /> <feMorphology operator=\"",
+    to-str(spread-operator),
+    "\" radius=\"",
+    to-str(spread-radius),
+    "\" in=\"blurred\" result=\"spread\" /> <feFlood flood-color=\"white\" result=\"white\" /> <feComposite in=\"white\" in2=\"spread\" operator=\"in\" result=\"shadow-ring\" /> <feComposite in=\"SourceAlpha\" in2=\"displaced\" operator=\"out\" result=\"gap\" /> <feGaussianBlur in=\"gap\" stdDeviation=\"",
+    to-str(blur-deviation),
+    "\" result=\"gap-blur\" /> <feComposite in=\"white\" in2=\"gap-blur\" operator=\"in\" result=\"gap-mask\" /> <feMerge> <feMergeNode in=\"shadow-ring\" /> <feMergeNode in=\"gap-mask\" /> </feMerge> </filter> <mask id=\"inset-shadow-mask\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"",
+    to-str(svg-width),
+    "\" height=\"",
+    to-str(svg-height),
+    "\"> <use href=\"#box-shape\" fill=\"white\" filter=\"url(#inset-shadow)\" /> </mask> <clipPath id=\"box-clip\"> <use href=\"#box-shape\" /> </clipPath> </defs> <g clip-path=\"url(#box-clip)\"> <rect x=\"0\" y=\"0\" width=\"",
+    to-str(svg-width),
+    "\" height=\"",
+    to-str(svg-height),
+    "\" fill=\"",
+    to-str(fill),
+    "\" mask=\"url(#inset-shadow-mask)\" /> </g> </svg>",
+  ).join()
+  // end templates/inset-shadow.svg.template
 }
 
 /// A box shadow.
@@ -441,6 +727,10 @@
 ///
 /// -> content
 #let shadow(
+  /// Whether to draw the shadow inside the box instead of outside.
+  ///
+  /// -> bool
+  inset: false,
   /// The horizontal offset.
   /// -> length
   dx: 0pt,
@@ -527,7 +817,7 @@
 
     // Return only the body if no fill is specified
     if (fill == none) {
-      body
+      return body
     }
 
     let (width, height) = measure(width: size.width, height: size.height)[
@@ -543,25 +833,61 @@
 
     let radius = normalize-radius(radius, width, height)
 
+    // Grow the SVG size by the outset to ensure that the shadow is not clipped
     let svg-height = height + outset * 2
     let svg-width = width + outset * 2
+
+    // Grow the SVG size by the offset to ensure that the shadow is not clipped
+    let svg-height = if inset {
+      svg-height
+    } else {
+      svg-height + calc.abs(dy) * 2
+    }
+    let svg-width = if inset {
+      svg-width
+    } else {
+      svg-width + calc.abs(dx) * 2
+    }
+
     let blur-deviation = blur * blur-to-deviation-factor
 
-    let svg-source = shadow-template(
-      svg-width: svg-width.pt(),
-      svg-height: svg-height.pt(),
-      blur-deviation: blur-deviation.pt(),
-      spread-radius: spread.pt(),
-      fill: fill,
-      rect-dx: outset.pt(),
-      rect-dy: outset.pt(),
-      rect-width: width.pt(),
-      rect-height: height.pt(),
-      radius-tl: radius.at("top-left").pt(),
-      radius-tr: radius.at("top-right").pt(),
-      radius-bl: radius.at("bottom-left").pt(),
-      radius-br: radius.at("bottom-right").pt(),
-    )
+    let svg-source = if inset {
+      inset-shadow-template(
+        svg-width: svg-width.pt(),
+        svg-height: svg-height.pt(),
+        blur-deviation: blur-deviation.pt(),
+        spread-radius: spread.pt(),
+        fill: fill,
+        dx: dx.pt(),
+        dy: dy.pt(),
+        rect-dx: outset.pt(),
+        rect-dy: outset.pt(),
+        rect-width: width.pt(),
+        rect-height: height.pt(),
+        radius-tl: radius.top-left.pt(),
+        radius-tr: radius.top-right.pt(),
+        radius-bl: radius.bottom-left.pt(),
+        radius-br: radius.bottom-right.pt(),
+      )
+    } else {
+      shadow-template(
+        svg-width: svg-width.pt(),
+        svg-height: svg-height.pt(),
+        blur-deviation: blur-deviation.pt(),
+        spread-radius: spread.pt(),
+        fill: fill,
+        dx: dx.pt(),
+        dy: dy.pt(),
+        rect-dx: outset.pt(),
+        rect-dy: outset.pt(),
+        rect-width: width.pt(),
+        rect-height: height.pt(),
+        radius-tl: radius.top-left.pt(),
+        radius-tr: radius.top-right.pt(),
+        radius-bl: radius.bottom-left.pt(),
+        radius-br: radius.bottom-right.pt(),
+      )
+    }
     let svg = image(
       bytes(svg-source),
       height: svg-height,
@@ -571,11 +897,19 @@
     )
 
     block(breakable: false)[
-      #place(center + horizon, dx: dx, dy: dy)[
+      // For inset shadows, draw the body first so the shadow is placed on top of it
+      #if inset [
+        #body
+      ]
+
+      #place(center + horizon)[
         #svg <shadowed-shadow>
       ]
 
-      #body
+      // For outset shadows, draw the body after so it stays on top of the shadow
+      #if not inset [
+        #body
+      ]
     ]
   },
 )

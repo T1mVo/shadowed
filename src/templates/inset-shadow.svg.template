@@ -1,0 +1,40 @@
+<svg
+  viewBox="0 0 [svg-width] [svg-height]"
+  height="[svg-height]pt"
+  width="[svg-width]pt"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    [gradient]
+    <path id="box-shape" d="[box-path(rect-dx: rect-dx, rect-dy: rect-dy, rect-width: rect-width, rect-height: rect-height, radius-tl: radius-tl, radius-tr: radius-tr, radius-bl: radius-bl, radius-br: radius-br)]" />
+    <filter id="inset-shadow" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="0" y="0" width="[svg-width]" height="[svg-height]">
+      <feOffset in="SourceAlpha" dx="[dx]" dy="[dy]" result="displaced" />
+      <feComponentTransfer in="displaced" result="inverted">
+        <feFuncA type="table" tableValues="1 0" />
+      </feComponentTransfer>
+      <feGaussianBlur in="inverted" stdDeviation="[blur-deviation]" result="blurred" />
+      <feMorphology operator="[spread-operator]" radius="[spread-radius]" in="blurred" result="spread" />
+      <feFlood flood-color="white" result="white" />
+      <feComposite in="white" in2="spread" operator="in" result="shadow-ring" />
+
+      <feComposite in="SourceAlpha" in2="displaced" operator="out" result="gap" />
+      <feGaussianBlur in="gap" stdDeviation="[blur-deviation]" result="gap-blur" />
+      <feComposite in="white" in2="gap-blur" operator="in" result="gap-mask" />
+
+      <feMerge>
+        <feMergeNode in="shadow-ring" />
+        <feMergeNode in="gap-mask" />
+      </feMerge>
+    </filter>
+    <mask id="inset-shadow-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="[svg-width]" height="[svg-height]">
+      <use href="#box-shape" fill="white" filter="url(#inset-shadow)" />
+    </mask>
+    <clipPath id="box-clip">
+      <use href="#box-shape" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#box-clip)">
+    <rect x="0" y="0" width="[svg-width]" height="[svg-height]" fill="[fill]" mask="url(#inset-shadow-mask)" />
+  </g>
+</svg>

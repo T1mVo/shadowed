@@ -1,0 +1,10 @@
+M [rect-dx + radius-tl], [rect-dy]
+H [rect-dx + rect-width - radius-tr]
+A [radius-tr] [radius-tr] 0 0 1 [rect-dx + rect-width], [rect-dy + radius-tr]
+V [rect-dy + rect-height - radius-br]
+A [radius-br] [radius-br] 0 0 1 [rect-dx + rect-width - radius-br], [rect-dy + rect-height]
+H [rect-dx + radius-bl]
+A [radius-bl] [radius-bl] 0 0 1 [rect-dx], [rect-dy + rect-height - radius-bl]
+V [rect-dy + radius-tl]
+A [radius-tl] [radius-tl] 0 0 1 [rect-dx + radius-tl], [rect-dy]
+Z
