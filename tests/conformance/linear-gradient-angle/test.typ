@@ -4,7 +4,10 @@
 
 #let page-layout = (width: 100pt, height: 100pt, margin: 0pt)
 #let angles = range(-720, 720, step: 135).map(i => i * 1deg)
-#let test-gradients = angles.map(angle => gradient.linear(..color.map.rainbow, angle: angle))
+#let test-gradients = angles.map(angle => gradient.linear(
+  ..color.map.rainbow,
+  angle: angle,
+))
 
 #set page(..page-layout)
 

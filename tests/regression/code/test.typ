@@ -14,7 +14,12 @@ fn main() {
 #let padding = spread + blur
 
 #pad(padding)[
-  #shadow(radius: radius, spread: spread, blur: blur, fill: rgb(89, 85, 101, 25%))[
+  #shadow(radius: radius, spread: spread, blur: blur, fill: rgb(
+    89,
+    85,
+    101,
+    25%,
+  ))[
     #block(radius: radius, inset: 12pt, fill: white)[
       #content
     ]
