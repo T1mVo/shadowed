@@ -32,6 +32,10 @@ Add the package to your Typst document:
 /// A box shadow.
 /// -> content
 #let shadow(
+  /// Whether to draw the shadow inside the box instead of outside.
+  ///
+  /// -> bool
+  inset: false,
   /// The horizontal offset.
   /// -> length
   dx: 0pt,
@@ -83,6 +87,76 @@ Add the package to your Typst document:
 
 ## Examples
 
+### Inner Shadow
+
+Set `inset` to `true` to draw the shadow inside the box:
+
+```typ
+#shadow(inset: true, spread: 2pt, blur: 4pt)[
+  #block(inset: 4pt)[
+    #text(size: 24pt)[
+      This box has an inner shadow
+    ]
+  ]
+]
+```
+
+![Inner shadow example](examples/inset.svg)
+
+### Multiple Shadows
+
+You can apply multiple shadows to the same content by stacking them:
+
+```typ
+#shadow(spread: 2pt, blur: 4pt, fill: red)[
+  #shadow(inset: true, spread: 2pt, blur: 4pt, fill: blue)[
+    #block(inset: 4pt, fill: white)[
+      #text(size: 24pt)[
+        This box has an inner and outer shadow
+      ]
+    ]
+  ]
+]
+```
+
+![Multiple shadows example](examples/multiple.svg)
+
+### Offset
+
+Control the shadow position with `dx` and `dy` parameters:
+
+```typ
+// Shadow offset to the bottom-right
+#shadow(dx: 3pt, dy: 3pt, blur: 4pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+
+// Shadow offset to the top-left
+#shadow(dx: -3pt, dy: -3pt, blur: 4pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+```
+
+![Offset example](examples/offset.svg)
+
+### Spread
+
+The `spread` parameter controls how much the shadow expands or contracts:
+
+```typ
+// Positive spread makes the shadow larger
+#shadow(blur: 4pt, spread: 2pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+
+// Negative spread makes the shadow smaller
+#shadow(blur: 4pt, spread: -2pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+```
+
+![Spread example](examples/spread.svg)
+
 ### Layout
 
 By default `shadow` does not affect the layout and just draws the shadow behind its content. This can lead to overlapping elements. To prevent this a `pad` of `blur + spread` can be applied.
@@ -125,42 +199,6 @@ The fill of a shadow can consist of nothing, a solid color or a gradient. Curren
 ```
 
 ![Fill example](examples/fill.svg)
-
-### Offset
-
-Control the shadow position with `dx` and `dy` parameters:
-
-```typ
-// Shadow offset to the bottom-right
-#shadow(dx: 3pt, dy: 3pt, blur: 4pt)[
-  #block(width: 100pt, height: 100pt, fill: white)
-]
-
-// Shadow offset to the top-left
-#shadow(dx: -3pt, dy: -3pt, blur: 4pt)[
-  #block(width: 100pt, height: 100pt, fill: white)
-]
-```
-
-![Offset example](examples/offset.svg)
-
-### Spread
-
-The `spread` parameter controls how much the shadow expands or contracts:
-
-```typ
-// Positive spread makes the shadow larger
-#shadow(blur: 4pt, spread: 2pt)[
-  #block(width: 100pt, height: 100pt, fill: white)
-]
-
-// Negative spread makes the shadow smaller
-#shadow(blur: 4pt, spread: -2pt)[
-  #block(width: 100pt, height: 100pt, fill: white)
-]
-```
-
-![Spread example](examples/spread.svg)
 
 ### Custom Radius
 
