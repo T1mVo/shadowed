@@ -1,1 +1,1 @@
-#include("../../conformance/radial-gradient/test.typ")
+#include "../../conformance/radial-gradient/test.typ"

@@ -1,1 +1,1 @@
-#include("../../conformance/linear-gradient-sharp/test.typ")
+#include "../../conformance/linear-gradient-sharp/test.typ"

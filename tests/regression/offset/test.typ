@@ -7,7 +7,14 @@
   #let spread = 1pt
   #let radius = 4pt
   #pad(blur + spread)[
-    #shadow(dx: dx, dy: dy, blur: blur, spread: spread, fill: rgb(89, 85, 101, 25%), radius: radius)[
+    #shadow(
+      dx: dx,
+      dy: dy,
+      blur: blur,
+      spread: spread,
+      fill: rgb(89, 85, 101, 25%),
+      radius: radius,
+    )[
       #block(width: 100%, fill: white, inset: 10pt, radius: radius)[
         #text
       ]

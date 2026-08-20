@@ -12,7 +12,11 @@
   color.hsl,
   color.hsv,
 )
-#let test-gradients = color-spaces.map(space => gradient.linear(red, green, space: space))
+#let test-gradients = color-spaces.map(space => gradient.linear(
+  red,
+  green,
+  space: space,
+))
 
 #set page(..page-layout)
 

@@ -1,4 +1,4 @@
-#import "test.typ": test-gradient, page-layout
+#import "test.typ": page-layout, test-gradient
 
 #set page(..page-layout)
 
