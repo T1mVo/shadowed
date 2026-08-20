@@ -6,12 +6,12 @@ on:
     branches: [ main ]
 
 jobs:
-  typst_0_13_0:
-    name: Typst 0.13.0
+  format:
+    name: Format check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install cargo
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -19,33 +19,28 @@ jobs:
           packages: cargo
           version: 1.0
 
-      - name: Install tytanic
-        uses: baptiste0928/cargo-install@v3.0.0
-        with:
-          crate: tytanic
-          git: https://github.com/tingerrr/tytanic.git
-          tag: v0.2.2
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
 
-      - name: Run tests
-        run: tt run --no-fail-fast --no-compare
+      - name: Install typstyle
+        run: cargo binstall --no-confirm typstyle@0.15.1
 
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: artifacts-0.13.0
-          path: |
-            tests/**/diff/*.png
-            tests/**/out/*.png
-            tests/**/ref/*.png
-          retention-days: 14
+      - name: Check formatting
+        run: typstyle --check src tests
 
-  typst_0_14_2:
-    name: Typst 0.14.2
+  test:
+    name: Typst ${{ matrix.typst }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { typst: 0.13.1, tytanic: 0.2.2, compare: false }
+          - { typst: 0.14.2, tytanic: 0.3.4, compare: false }
+          - { typst: 0.15.1, tytanic: 0.4.1, compare: true }
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install cargo
         uses: awalsh128/cache-apt-pkgs-action@latest
@@ -53,21 +48,20 @@ jobs:
           packages: cargo
           version: 1.0
 
+      - name: Install cargo-binstall
+        uses: cargo-bins/cargo-binstall@main
+
       - name: Install tytanic
-        uses: baptiste0928/cargo-install@v3.0.0
-        with:
-          crate: tytanic
-          git: https://github.com/tingerrr/tytanic.git
-          tag: v0.3.3
+        run: cargo binstall --no-confirm tytanic@${{ matrix.tytanic }}
 
       - name: Run tests
-        run: tt run --no-fail-fast
+        run: tt run --no-fail-fast ${{ matrix.compare && '' || '--no-compare' }}
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: artifacts-0.14.2
+          name: artifacts-${{ matrix.typst }}
           path: |
             tests/**/diff/*.png
             tests/**/out/*.png
