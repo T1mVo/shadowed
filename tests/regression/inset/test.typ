@@ -11,27 +11,65 @@
   align: center,
   gutter: 5pt,
   [
-    #shadow(inset: true, dx: 3pt, dy: 3pt, blur: 4pt, spread: 2pt, radius: radius, fill: shadow-fill)[
+    #shadow(
+      inset: true,
+      dx: 3pt,
+      dy: 3pt,
+      blur: 4pt,
+      spread: 2pt,
+      radius: radius,
+      fill: shadow-fill,
+    )[
       #block(width: 40pt, height: 40pt, fill: box-fill, radius: radius)
     ]
   ],
   [
-    #shadow(inset: true, dx: -3pt, dy: -3pt, blur: 4pt, spread: 2pt, radius: radius, fill: shadow-fill)[
+    #shadow(
+      inset: true,
+      dx: -3pt,
+      dy: -3pt,
+      blur: 4pt,
+      spread: 2pt,
+      radius: radius,
+      fill: shadow-fill,
+    )[
       #block(width: 40pt, height: 40pt, fill: box-fill, radius: radius)
     ]
   ],
   [
-    #shadow(inset: true, blur: 4pt, spread: -2pt, radius: radius, fill: shadow-fill)[
+    #shadow(
+      inset: true,
+      blur: 4pt,
+      spread: -2pt,
+      radius: radius,
+      fill: shadow-fill,
+    )[
+      #block(width: 40pt, height: 40pt, fill: box-fill, radius: radius)
+    ]
+  ],
+
+  [
+    #shadow(
+      inset: true,
+      dx: 3pt,
+      dy: 3pt,
+      blur: 4pt,
+      spread: 2pt,
+      radius: radius,
+      fill: gradient.linear(red, blue),
+    )[
       #block(width: 40pt, height: 40pt, fill: box-fill, radius: radius)
     ]
   ],
   [
-    #shadow(inset: true, dx: 3pt, dy: 3pt, blur: 4pt, spread: 2pt, radius: radius, fill: gradient.linear(red, blue))[
-      #block(width: 40pt, height: 40pt, fill: box-fill, radius: radius)
-    ]
-  ],
-  [
-    #shadow(inset: true, dx: 3pt, dy: 3pt, blur: 4pt, spread: 2pt, fill: shadow-fill)[
+    #shadow(
+      inset: true,
+      dx: 3pt,
+      dy: 3pt,
+      blur: 4pt,
+      spread: 2pt,
+      fill: shadow-fill,
+    )[
       #block(width: 40pt, height: 40pt, fill: box-fill)
     ]
   ],
