@@ -11,12 +11,6 @@
   /// -> str | int | float
   value,
 ) = {
-  assert(
-    type(value) == str or type(value) == int or type(value) == float,
-    message: "to-str: value must be of type str, int or float, got "
-      + str(type(value)),
-  )
-
   if type(value) == str {
     value
   } else {
@@ -71,15 +65,6 @@
   /// -> length
   height,
 ) = {
-  assert(
-    type(radius) == length
-      or type(radius) == ratio
-      or type(radius) == relative
-      or type(radius) == dictionary,
-    message: "normalize-radius: radius must be of type length, ratio, relative or dictionary, got "
-      + str(type(radius)),
-  )
-
   if type(radius) != dictionary {
     let radius = convert-radius(radius, width, height)
 
@@ -122,6 +107,103 @@
       "bottom-right": convert-radius(bottom-right, width, height),
     )
   }
+}
+
+/// Normalize a spread.
+///
+/// Returns a dictionary that contains the spread of each side at
+/// "top", "right", "bottom", and "left".
+///
+/// If a dictionary is passed, the spread of each side can be set
+/// individually using the following keys in order of precedence:
+/// - top: The spread of the top side.
+/// - right: The spread of the right side.
+/// - bottom: The spread of the bottom side.
+/// - left: The spread of the left side.
+/// - x: The spread of the left and right sides.
+/// - y: The spread of the top and bottom sides.
+/// - rest: The spread for all sides except those for which the dictionary
+///   explicitly sets a size.
+///
+/// For outset shadows the spreads are clamped so that the shadow is never
+/// contracted more than the size of the box itself. For inset shadows they
+/// are clamped so that the inner boundary never collapses past the box.
+///
+/// -> dictionary
+#let normalize-spread(
+  /// The spread to normalize.
+  /// -> length | dictionary
+  spread,
+  /// The width of the shadow.
+  /// -> length
+  width,
+  /// The height of the shadow.
+  /// -> length
+  height,
+  /// Whether the spread is for an inset shadow.
+  /// -> bool
+  inset: false,
+) = {
+  let (top, right, bottom, left) = if type(spread) != dictionary {
+    (spread, spread, spread, spread)
+  } else {
+    let top = spread.at("rest", default: 0pt)
+    let right = spread.at("rest", default: 0pt)
+    let bottom = spread.at("rest", default: 0pt)
+    let left = spread.at("rest", default: 0pt)
+
+    bottom = spread.at("bottom", default: bottom)
+    right = spread.at("right", default: right)
+    top = spread.at("top", default: top)
+    left = spread.at("left", default: left)
+
+    left = spread.at("x", default: left)
+    right = spread.at("x", default: right)
+
+    top = spread.at("y", default: top)
+    bottom = spread.at("y", default: bottom)
+
+    (top, right, bottom, left)
+  }
+
+  if not inset {
+    // Clamp the spreads so the shadow never contracts past the box itself
+    let shrink-x = -(left + right)
+    if shrink-x > width {
+      let factor = width / shrink-x
+      left *= factor
+      right *= factor
+    }
+
+    let shrink-y = -(top + bottom)
+    if shrink-y > height {
+      let factor = height / shrink-y
+      top *= factor
+      bottom *= factor
+    }
+  } else {
+    // Clamp the spreads so the inner boundary never inverts past the box
+    let expand-x = left + right
+    if expand-x > width {
+      let factor = width / expand-x
+      left *= factor
+      right *= factor
+    }
+
+    let expand-y = top + bottom
+    if expand-y > height {
+      let factor = height / expand-y
+      top *= factor
+      bottom *= factor
+    }
+  }
+
+  (
+    top: top,
+    right: right,
+    bottom: bottom,
+    left: left,
+  )
 }
 
 /// Interpolates the gradient stops based on the color space.
@@ -418,19 +500,6 @@
   (fill, gradient)
 }
 
-/// Returns the feMorphology operator for a spread radius.
-///
-/// -> str
-#let spread-operator(
-  /// The spread radius.
-  /// -> int | float
-  spread-radius,
-) = if spread-radius >= 0 {
-  "dilate"
-} else {
-  "erode"
-}
-
 /// Renders the path of a rounded rectangle.
 ///
 /// -> str
@@ -524,18 +593,9 @@
   /// The blur deviation.
   /// -> int | float
   blur-deviation: none,
-  /// The spread radius.
-  /// -> int | float
-  spread-radius: none,
   /// The fill color or gradient.
   /// -> color | gradient
   fill: none,
-  /// The horizontal offset.
-  /// -> int | float
-  dx: none,
-  /// The vertical offset.
-  /// -> int | float
-  dy: none,
   /// The gradient x position.
   /// -> int | float
   rect-dx: none,
@@ -562,9 +622,6 @@
   radius-br: none,
 ) = {
   let (fill, gradient) = resolve-fill(fill, svg-width, svg-height)
-  let spread-operator = spread-operator(spread-radius)
-  // A radius of 0 causes rendering issues: https://github.com/typst/typst/issues/7794
-  let spread-radius = calc.max(calc.abs(spread-radius), 0.001)
 
   // begin templates/shadow.svg.template
   (
@@ -580,15 +637,7 @@
     to-str(gradient),
     " <filter id=\"shadow\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"-10%\" y=\"-10%\" width=\"120%\" height=\"120%\"> <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"",
     to-str(blur-deviation),
-    "\" result=\"blur\" /> <feMorphology operator=\"",
-    to-str(spread-operator),
-    "\" radius=\"",
-    to-str(spread-radius),
-    "\" in=\"blur\" result=\"spread\" /> </filter> </defs> <g transform=\"translate(",
-    to-str(dx + calc.abs(dx)),
-    ",",
-    to-str(dy + calc.abs(dy)),
-    ")\"> <path d=\"",
+    "\" result=\"blur\" /> </filter> </defs> <path d=\"",
     to-str(box-path(
       rect-dx: rect-dx,
       rect-dy: rect-dy,
@@ -601,7 +650,7 @@
     )),
     "\" fill=\"",
     to-str(fill),
-    "\" filter=\"url(#shadow)\" /> </g> </svg>",
+    "\" filter=\"url(#shadow)\" /> </svg>",
   ).join()
   // end templates/shadow.svg.template
 }
@@ -619,30 +668,33 @@
   /// The blur deviation.
   /// -> int | float
   blur-deviation: none,
-  /// The spread radius.
-  /// -> int | float
-  spread-radius: none,
   /// The fill color or gradient.
   /// -> color | gradient
   fill: none,
-  /// The horizontal offset.
-  /// -> int | float
-  dx: none,
-  /// The vertical offset.
-  /// -> int | float
-  dy: none,
-  /// The gradient x position.
+  /// The x position of the box boundary.
   /// -> int | float
   rect-dx: none,
-  /// The gradient y position.
+  /// The y position of the box boundary.
   /// -> int | float
   rect-dy: none,
-  /// The gradient width.
+  /// The width of the box boundary.
   /// -> int | float
   rect-width: none,
-  /// The gradient height.
+  /// The height of the box boundary.
   /// -> int | float
   rect-height: none,
+  /// The x position of the inner hole.
+  /// -> int | float
+  inner-dx: none,
+  /// The y position of the inner hole.
+  /// -> int | float
+  inner-dy: none,
+  /// The width of the inner hole.
+  /// -> int | float
+  inner-width: none,
+  /// The height of the inner hole.
+  /// -> int | float
+  inner-height: none,
   /// The top-left radius.
   /// -> int | float
   radius-tl: none,
@@ -657,9 +709,6 @@
   radius-br: none,
 ) = {
   let (fill, gradient) = resolve-fill(fill, svg-width, svg-height)
-  let spread-operator = spread-operator(spread-radius)
-  // A radius of 0 causes rendering issues: https://github.com/typst/typst/issues/7794
-  let spread-radius = calc.max(calc.abs(spread-radius), 0.001)
 
   // begin templates/inset-shadow.svg.template
   (
@@ -673,7 +722,7 @@
     to-str(svg-width),
     "pt\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"> <defs> ",
     to-str(gradient),
-    " <path id=\"box-shape\" d=\"",
+    " <path id=\"box-boundary\" d=\"",
     to-str(box-path(
       rect-dx: rect-dx,
       rect-dy: rect-dy,
@@ -684,33 +733,46 @@
       radius-bl: radius-bl,
       radius-br: radius-br,
     )),
-    "\" /> <filter id=\"inset-shadow\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"",
+    "\" /> <path id=\"inset-shape\" fill-rule=\"evenodd\" d=\"",
+    to-str(
+      box-path(
+        rect-dx: 0,
+        rect-dy: 0,
+        rect-width: svg-width,
+        rect-height: svg-height,
+        radius-tl: 0,
+        radius-tr: 0,
+        radius-bl: 0,
+        radius-br: 0,
+      )
+        + box-path(
+          rect-dx: inner-dx,
+          rect-dy: inner-dy,
+          rect-width: inner-width,
+          rect-height: inner-height,
+          radius-tl: radius-tl,
+          radius-tr: radius-tr,
+          radius-bl: radius-bl,
+          radius-br: radius-br,
+        ),
+    ),
+    "\" /> <filter id=\"inset-blur\" filterUnits=\"userSpaceOnUse\" primitiveUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"",
     to-str(svg-width),
     "\" height=\"",
     to-str(svg-height),
-    "\"> <feOffset in=\"SourceAlpha\" dx=\"",
-    to-str(dx),
-    "\" dy=\"",
-    to-str(dy),
-    "\" result=\"displaced\" /> <feComponentTransfer in=\"displaced\" result=\"inverted\"> <feFuncA type=\"table\" tableValues=\"1 0\" /> </feComponentTransfer> <feGaussianBlur in=\"inverted\" stdDeviation=\"",
+    "\"> <feGaussianBlur in=\"SourceGraphic\" stdDeviation=\"",
     to-str(blur-deviation),
-    "\" result=\"blurred\" /> <feMorphology operator=\"",
-    to-str(spread-operator),
-    "\" radius=\"",
-    to-str(spread-radius),
-    "\" in=\"blurred\" result=\"spread\" /> <feFlood flood-color=\"white\" result=\"white\" /> <feComposite in=\"white\" in2=\"spread\" operator=\"in\" result=\"shadow-ring\" /> <feComposite in=\"SourceAlpha\" in2=\"displaced\" operator=\"out\" result=\"gap\" /> <feGaussianBlur in=\"gap\" stdDeviation=\"",
-    to-str(blur-deviation),
-    "\" result=\"gap-blur\" /> <feComposite in=\"white\" in2=\"gap-blur\" operator=\"in\" result=\"gap-mask\" /> <feMerge> <feMergeNode in=\"shadow-ring\" /> <feMergeNode in=\"gap-mask\" /> </feMerge> </filter> <mask id=\"inset-shadow-mask\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"",
+    "\" /> </filter> <mask id=\"inset-mask\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"",
     to-str(svg-width),
     "\" height=\"",
     to-str(svg-height),
-    "\"> <use href=\"#box-shape\" fill=\"white\" filter=\"url(#inset-shadow)\" /> </mask> <clipPath id=\"box-clip\"> <use href=\"#box-shape\" /> </clipPath> </defs> <g clip-path=\"url(#box-clip)\"> <rect x=\"0\" y=\"0\" width=\"",
+    "\"> <use href=\"#inset-shape\" fill=\"white\" filter=\"url(#inset-blur)\" /> </mask> <clipPath id=\"box-clip\"> <use href=\"#box-boundary\" /> </clipPath> </defs> <g clip-path=\"url(#box-clip)\"> <rect x=\"0\" y=\"0\" width=\"",
     to-str(svg-width),
     "\" height=\"",
     to-str(svg-height),
     "\" fill=\"",
     to-str(fill),
-    "\" mask=\"url(#inset-shadow-mask)\" /> </g> </svg>",
+    "\" mask=\"url(#inset-mask)\" /> </g> </svg>",
   ).join()
   // end templates/inset-shadow.svg.template
 }
@@ -743,8 +805,26 @@
   ///
   /// -> length
   blur: 0pt,
-  /// How far to spread the length of the shadow.
-  /// -> length
+  /// How far to spread the shadow.
+  ///
+  /// Can be either:
+  /// - A length for a uniform spread.
+  ///
+  /// - A dictionary: With a dictionary, the spread for each side can be set
+  ///   individually.
+  ///   The dictionary can contain the following keys in order of precedence:
+  ///   - top: The spread of the top side.
+  ///   - right: The spread of the right side.
+  ///   - bottom: The spread of the bottom side.
+  ///   - left: The spread of the left side.
+  ///   - x: The spread of the left and right sides.
+  ///   - y: The spread of the top and bottom sides.
+  ///   - rest: The spread for all sides except those for which the dictionary
+  ///     explicitly sets a size.
+  ///
+  /// Negative values contract the shadow on the respective side.
+  ///
+  /// -> length | dictionary
   spread: 0pt,
   /// How to fill the shadow.
   ///
@@ -780,12 +860,13 @@
 ) = layout(
   size => {
     // Type checks
+    assert(type(inset) == bool, message: "shadow: inset must be of type bool")
     assert(type(dx) == length, message: "shadow: dx must be of type length")
     assert(type(dy) == length, message: "shadow: dy must be of type length")
     assert(type(blur) == length, message: "shadow: blur must be of type length")
     assert(
-      type(spread) == length,
-      message: "shadow: spread must be of type length",
+      type(spread) == length or type(spread) == dictionary,
+      message: "shadow: spread must be of type length or dictionary",
     )
     assert(
       type(fill) == color or type(fill) == gradient or fill == none,
@@ -798,13 +879,60 @@
         or type(radius) == dictionary,
       message: "shadow: radius must be of type length, ratio, relative or dictionary",
     )
+    assert(
+      type(body) == content,
+      message: "shadow: body must be of type content",
+    )
 
     // Type-dependent type checks
     if type(radius) == dictionary {
+      let radius-keys = (
+        "top-left",
+        "top-right",
+        "bottom-left",
+        "bottom-right",
+        "left",
+        "top",
+        "right",
+        "bottom",
+        "rest",
+      )
+      for key in radius.keys() {
+        assert(
+          key in radius-keys,
+          message: "shadow: radius has unsupported key " + str(key),
+        )
+      }
+
       for r in radius.values() {
         assert(
           type(r) == length or type(r) == ratio or type(r) == relative,
           message: "shadow: radius must be of type length, ratio or relative",
+        )
+      }
+    }
+
+    if type(fill) == gradient {
+      assert(
+        fill.kind() == std.gradient.linear
+          or fill.kind() == std.gradient.radial,
+        message: "shadow: fill must be of kind linear or radial",
+      )
+    }
+
+    if type(spread) == dictionary {
+      let spread-keys = ("top", "right", "bottom", "left", "x", "y", "rest")
+      for key in spread.keys() {
+        assert(
+          key in spread-keys,
+          message: "shadow: spread has unsupported key " + str(key),
+        )
+      }
+
+      for s in spread.values() {
+        assert(
+          type(s) == length,
+          message: "shadow: spread values must be of type length",
         )
       }
     }
@@ -829,41 +957,63 @@
       return block()
     }
 
-    let outset = calc.max(blur + spread, 0pt)
-
     let radius = normalize-radius(radius, width, height)
+    let spread = normalize-spread(spread, width, height, inset: inset)
 
-    // Grow the SVG size by the outset to ensure that the shadow is not clipped
-    let svg-height = height + outset * 2
-    let svg-width = width + outset * 2
+    // Fold the offset into the spread to translate the shadow. Since the
+    // offset is applied after the spread is clamped, it never contracts the
+    // shadow past the box itself. For inset shadows the hole is shifted
+    // instead, so the shadow band thickens on the side opposite to the
+    // offset (see below).
+    if not inset {
+      spread.left -= dx
+      spread.right += dx
+      spread.top -= dy
+      spread.bottom += dy
+    }
 
-    // Grow the SVG size by the offset to ensure that the shadow is not clipped
-    let svg-height = if inset {
-      svg-height
-    } else {
-      svg-height + calc.abs(dy) * 2
-    }
-    let svg-width = if inset {
-      svg-width
-    } else {
-      svg-width + calc.abs(dx) * 2
-    }
+    // Grow the SVG size by the spread and blur to ensure that the shadow is not clipped
+    let grow-x = calc.max(blur + spread.left, blur + spread.right, 0pt)
+    let grow-y = calc.max(blur + spread.top, blur + spread.bottom, 0pt)
+
+    let svg-height = height + grow-y * 2
+    let svg-width = width + grow-x * 2
 
     let blur-deviation = blur * blur-to-deviation-factor
 
     let svg-source = if inset {
+      // The hole of an inset shadow is the box contracted by the spread on
+      // each side. Its position shifts with the offset, thickening the
+      // shadow band on the side opposite to the offset, and is clamped so
+      // it never moves past the box itself. The padding around the box
+      // (grow-x/grow-y) gives the blur room to build up full opacity before
+      // it reaches the box edge, instead of fading out right at the edge.
+      let clamped-dx = calc.min(
+        calc.max(spread.left + dx, 0pt),
+        width - spread.left - spread.right,
+      )
+      let clamped-dy = calc.min(
+        calc.max(spread.top + dy, 0pt),
+        height - spread.top - spread.bottom,
+      )
+      let inner-dx = grow-x + clamped-dx
+      let inner-dy = grow-y + clamped-dy
+      let inner-width = width - spread.left - spread.right
+      let inner-height = height - spread.top - spread.bottom
+
       inset-shadow-template(
         svg-width: svg-width.pt(),
         svg-height: svg-height.pt(),
         blur-deviation: blur-deviation.pt(),
-        spread-radius: spread.pt(),
         fill: fill,
-        dx: dx.pt(),
-        dy: dy.pt(),
-        rect-dx: outset.pt(),
-        rect-dy: outset.pt(),
+        rect-dx: grow-x.pt(),
+        rect-dy: grow-y.pt(),
         rect-width: width.pt(),
         rect-height: height.pt(),
+        inner-dx: inner-dx.pt(),
+        inner-dy: inner-dy.pt(),
+        inner-width: inner-width.pt(),
+        inner-height: inner-height.pt(),
         radius-tl: radius.top-left.pt(),
         radius-tr: radius.top-right.pt(),
         radius-bl: radius.bottom-left.pt(),
@@ -874,14 +1024,11 @@
         svg-width: svg-width.pt(),
         svg-height: svg-height.pt(),
         blur-deviation: blur-deviation.pt(),
-        spread-radius: spread.pt(),
         fill: fill,
-        dx: dx.pt(),
-        dy: dy.pt(),
-        rect-dx: outset.pt(),
-        rect-dy: outset.pt(),
-        rect-width: width.pt(),
-        rect-height: height.pt(),
+        rect-dx: (grow-x - spread.left).pt(),
+        rect-dy: (grow-y - spread.top).pt(),
+        rect-width: (width + spread.left + spread.right).pt(),
+        rect-height: (height + spread.top + spread.bottom).pt(),
         radius-tl: radius.top-left.pt(),
         radius-tr: radius.top-right.pt(),
         radius-bl: radius.bottom-left.pt(),

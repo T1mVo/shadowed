@@ -24,4 +24,20 @@
   "No spread",
 
   "Negative spread",
+  // Spread only downwards
+  shadow(blur: 4pt, spread: (bottom: 10pt))[
+    #block(width: 100pt, height: 100pt, fill: white)
+  ],
+  // Spread to the right
+  shadow(blur: 4pt, spread: (right: 10pt))[
+    #block(width: 100pt, height: 100pt, fill: white)
+  ],
+  // Asymmetric spread
+  shadow(blur: 4pt, spread: (top: 2pt, right: 8pt, bottom: 10pt, left: -4pt))[
+    #block(width: 100pt, height: 100pt, fill: white)
+  ],
+  "Bottom only",
+  "Right only",
+
+  "Asymmetric",
 )
