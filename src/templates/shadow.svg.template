@@ -8,11 +8,8 @@
     [gradient]
     <filter id="shadow" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="-10%" y="-10%" width="120%" height="120%">
       <feGaussianBlur in="SourceGraphic" stdDeviation="[blur-deviation]" result="blur" />
-      <feMorphology operator="[spread-operator]" radius="[spread-radius]" in="blur" result="spread" />
     </filter>
   </defs>
 
-  <g transform="translate([dx + calc.abs(dx)],[dy + calc.abs(dy)])">
-    <path d="[box-path(rect-dx: rect-dx, rect-dy: rect-dy, rect-width: rect-width, rect-height: rect-height, radius-tl: radius-tl, radius-tr: radius-tr, radius-bl: radius-bl, radius-br: radius-br)]" fill="[fill]" filter="url(#shadow)" />
-  </g>
+  <path d="[box-path(rect-dx: rect-dx, rect-dy: rect-dy, rect-width: rect-width, rect-height: rect-height, radius-tl: radius-tl, radius-tr: radius-tr, radius-bl: radius-bl, radius-br: radius-br)]" fill="[fill]" filter="url(#shadow)" />
 </svg>
