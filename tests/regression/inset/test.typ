@@ -73,4 +73,27 @@
       #block(width: 40pt, height: 40pt, fill: box-fill)
     ]
   ],
+  [
+    #shadow(
+      inset: true,
+      blur: 4pt,
+      spread: (bottom: 10pt, right: 10pt),
+      radius: radius,
+      fill: shadow-fill,
+    )[
+      #block(width: 40pt, height: 40pt, fill: box-fill, radius: radius)
+    ]
+  ],
+
+  [
+    #shadow(
+      inset: true,
+      blur: 4pt,
+      spread: (left: -6pt),
+      radius: radius,
+      fill: shadow-fill,
+    )[
+      #block(width: 40pt, height: 40pt, fill: box-fill, radius: radius)
+    ]
+  ],
 )

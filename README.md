@@ -48,8 +48,26 @@ Add the package to your Typst document:
   /// 
   /// -> length
   blur: 0pt,
-  /// How far to spread the length of the shadow.
-  /// -> length
+  /// How far to spread the shadow.
+  ///
+  /// Can be either:
+  /// - A length for a uniform spread.
+  ///
+  /// - A dictionary: With a dictionary, the spread for each side can be set
+  ///   individually.
+  ///   The dictionary can contain the following keys in order of precedence:
+  ///   - top: The spread of the top side.
+  ///   - right: The spread of the right side.
+  ///   - bottom: The spread of the bottom side.
+  ///   - left: The spread of the left side.
+  ///   - x: The spread of the left and right sides.
+  ///   - y: The spread of the top and bottom sides.
+  ///   - rest: The spread for all sides except those for which the dictionary
+  ///     explicitly sets a size.
+  ///
+  /// Negative values contract the shadow on the respective side.
+  ///
+  /// -> length | dictionary
   spread: 0pt,
   /// How to fill the shadow.
   /// 
@@ -137,6 +155,20 @@ Control the shadow position with `dx` and `dy` parameters:
 ]
 ```
 
+Alternatively the offsets can be achieved by using an asymmetric spread dictionary instead of dx/dy:
+
+```typ
+// Shadow offset to the bottom-right
+shadow(blur: 4pt, spread: (top: -1pt, left: -1pt, right: 1pt, bottom: 1pt))[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+
+// Shadow offset to the top-left
+shadow(blur: 4pt, spread: (top: 1pt, left: 1pt, right: -1pt, bottom: -1pt))[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+```
+
 ![Offset example](examples/offset.svg)
 
 ### Spread
@@ -151,6 +183,25 @@ The `spread` parameter controls how much the shadow expands or contracts:
 
 // Negative spread makes the shadow smaller
 #shadow(blur: 4pt, spread: -2pt)[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+```
+
+The spread for each side can be controlled individually with a dictionary:
+
+```typ
+// Spread only downwards
+shadow(blur: 4pt, spread: (bottom: 10pt))[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+
+// Spread to the right
+shadow(blur: 4pt, spread: (right: 10pt))[
+  #block(width: 100pt, height: 100pt, fill: white)
+]
+
+// Asymmetric spread
+shadow(blur: 4pt, spread: (top: 2pt, right: 8pt, bottom: 10pt, left: -4pt))[
   #block(width: 100pt, height: 100pt, fill: white)
 ]
 ```
