@@ -159,12 +159,12 @@ Alternatively the offsets can be achieved by using an asymmetric spread dictiona
 
 ```typ
 // Shadow offset to the bottom-right
-shadow(blur: 4pt, spread: (top: -1pt, left: -1pt, right: 1pt, bottom: 1pt))[
+#shadow(blur: 4pt, spread: (top: -1pt, left: -1pt, right: 1pt, bottom: 1pt))[
   #block(width: 100pt, height: 100pt, fill: white)
 ]
 
 // Shadow offset to the top-left
-shadow(blur: 4pt, spread: (top: 1pt, left: 1pt, right: -1pt, bottom: -1pt))[
+#shadow(blur: 4pt, spread: (top: 1pt, left: 1pt, right: -1pt, bottom: -1pt))[
   #block(width: 100pt, height: 100pt, fill: white)
 ]
 ```
@@ -191,17 +191,17 @@ The spread for each side can be controlled individually with a dictionary:
 
 ```typ
 // Spread only downwards
-shadow(blur: 4pt, spread: (bottom: 10pt))[
+#shadow(blur: 4pt, spread: (bottom: 10pt))[
   #block(width: 100pt, height: 100pt, fill: white)
 ]
 
 // Spread to the right
-shadow(blur: 4pt, spread: (right: 10pt))[
+#shadow(blur: 4pt, spread: (right: 10pt))[
   #block(width: 100pt, height: 100pt, fill: white)
 ]
 
 // Asymmetric spread
-shadow(blur: 4pt, spread: (top: 2pt, right: 8pt, bottom: 10pt, left: -4pt))[
+#shadow(blur: 4pt, spread: (top: 2pt, right: 8pt, bottom: 10pt, left: -4pt))[
   #block(width: 100pt, height: 100pt, fill: white)
 ]
 ```
