@@ -280,7 +280,7 @@ You can set individual corner radii using a dictionary:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+`shadowed` is available under the MIT OR Apache-2.0 license. See [LICENSE-MIT](LICENSE-MIT) and [LICENSE-APACHE](LICENSE-APACHE) for details.
 
 ## Credits
 
