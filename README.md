@@ -7,13 +7,13 @@ Box shadows for [Typst](https://typst.app/).
 Add the package to your Typst document:
 
 ```typ
-#import "@preview/shadowed:0.3.0": shadow
+#import "@preview/shadowed:0.4.0": shadow
 ```
 
 ## Quick Start
 
 ```typ
-#import "@preview/shadowed:0.3.0": shadow
+#import "@preview/shadowed:0.4.0": shadow
 
 #set par(justify: true)
 
